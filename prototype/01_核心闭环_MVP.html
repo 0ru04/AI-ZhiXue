@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI智学 · 核心闭环 MVP 高保真原型</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --paper:#F4EBD3;
+  --paper-2:#FFF8E6;
+  --paper-3:#FFFDF5;
+  --ink:#191510;
+  --red:#EE4B2B;
+  --red-dark:#C9381D;
+  --yellow:#F5C542;
+  --yellow-soft:#FBE08A;
+  --blue:#3D86C6;
+  --green:#2F9E62;
+  --green-soft:#DFF1E6;
+  --red-soft:#FBE1DB;
+  --muted:#776C5A;
+  --line:3px solid var(--ink);
+  --shadow:5px 5px 0 var(--ink);
+  --shadow-sm:3px 3px 0 var(--ink);
+  --wobble-sm:14px 8px 16px 9px / 9px 15px 8px 14px;
+  --font-display:"ZCOOL KuaiLe","ZCOOL QingKe HuangYou","YouYuan","幼圆","Microsoft YaHei",sans-serif;
+  --font-body:"LXGW WenKai","KaiTi","楷体","Microsoft YaHei",sans-serif;
+  --font-ui:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --font-num:"Bangers","Impact","Arial Black",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{
+  margin:0;color:var(--ink);font-family:var(--font-ui);line-height:1.7;overflow-x:hidden;
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 6%, rgba(245,197,66,.22), transparent 26%),
+    radial-gradient(circle at 88% 14%, rgba(61,134,198,.11), transparent 28%),
+    radial-gradient(circle, rgba(25,21,16,.085) 1px, transparent 1.25px);
+  background-size:auto,auto,8px 8px;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+::selection{background:var(--yellow);color:var(--ink)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+.ico{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.tiny{font-family:var(--font-ui);font-size:10.5px;color:var(--muted);line-height:1.55}
+
+/* ============================================================
+   MASTHEAD
+   ============================================================ */
+.masthead{position:relative;border-bottom:4px solid var(--ink);overflow:hidden}
+.masthead::before{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle, rgba(25,21,16,.16) 1.2px, transparent 1.4px);
+  background-size:9px 9px;opacity:.3;pointer-events:none;
+}
+.masthead__inner{
+  position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:46px;align-items:center;
+  padding-top:46px;padding-bottom:42px;
+}
+.issue-line{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:800;letter-spacing:.1em}
+.issue-badge{
+  display:inline-flex;align-items:center;padding:3px 9px;
+  background:var(--ink);color:var(--paper-2);border:2px solid var(--ink);
+  font-family:var(--font-num);font-size:14px;letter-spacing:.08em;transform:rotate(-2deg);
+}
+.masthead h1{
+  margin:14px 0 16px;font-family:var(--font-display);font-weight:400;
+  font-size:clamp(42px,5.8vw,76px);line-height:1.04;
+}
+.masthead h1 .hl{position:relative;display:inline-block;color:var(--red);text-shadow:3px 3px 0 var(--ink)}
+.masthead h1 .hl::after{
+  content:"";position:absolute;left:-2px;right:-2px;bottom:4px;height:12px;
+  background:var(--yellow);z-index:-1;transform:rotate(-1.2deg);
+}
+.lede{max-width:680px;margin:0 0 20px;font-family:var(--font-body);font-size:16px;line-height:1.85;color:#3A332A}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.masthead__art{display:flex;justify-content:center}
+.mini-cover{
+  position:relative;width:min(300px,100%);padding:18px;
+  border:4px solid var(--ink);background:var(--paper-3);
+  box-shadow:10px 10px 0 var(--red),15px 15px 0 var(--ink);
+  transform:rotate(1.5deg);overflow:hidden;
+}
+.mini-cover::after{content:"";position:absolute;inset:9px;border:2px solid rgba(25,21,16,.2);pointer-events:none}
+.mini-cover .halftone-bg{
+  position:absolute;inset:0;
+  background-image:radial-gradient(circle, rgba(25,21,16,.18) 1.1px, transparent 1.3px);
+  background-size:7px 7px;opacity:.5;
+}
+.mini-cover .mascot{position:relative;z-index:2;width:118px;margin:18px auto 0;filter:drop-shadow(4px 4px 0 rgba(25,21,16,.15))}
+.mini-cover__bubble{
+  position:absolute;top:56px;right:10px;z-index:3;max-width:130px;
+  background:var(--paper-2);border:3px solid var(--ink);padding:8px 10px;
+  font-family:var(--font-body);font-size:11.5px;line-height:1.55;
+  box-shadow:3px 3px 0 var(--ink);transform:rotate(-3deg);
+}
+.mini-cover__bubble::after{
+  content:"";position:absolute;left:16px;bottom:-9px;width:14px;height:14px;
+  background:var(--paper-2);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);
+  transform:rotate(45deg);
+}
+.mini-cover__title{
+  position:relative;z-index:2;margin-top:16px;text-align:center;
+  font-family:var(--font-display);font-size:30px;line-height:1.12;color:var(--red);
+  -webkit-text-stroke:1.2px var(--ink);
+  text-shadow:2px 2px 0 var(--yellow),4px 4px 0 var(--ink);transform:rotate(-2deg);
+}
+.mini-cover__foot{
+  position:relative;z-index:2;margin-top:10px;text-align:center;
+  font-family:var(--font-num);font-size:11px;letter-spacing:.14em;color:var(--muted);
+}
+
+/* ============================================================
+   TOC
+   ============================================================ */
+.toc{
+  position:sticky;top:0;z-index:80;background:rgba(244,235,211,.94);
+  backdrop-filter:blur(8px);border-bottom:3px solid var(--ink);
+}
+.toc__inner{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-top:9px;padding-bottom:9px}
+.toc__inner::-webkit-scrollbar{display:none}
+.toc a{
+  flex:0 0 auto;text-decoration:none;padding:5px 11px;border:2px solid transparent;
+  font-size:12.5px;font-weight:800;white-space:nowrap;
+}
+.toc a:hover,.toc a:focus-visible{border-color:var(--ink);background:var(--yellow);outline:none}
+.toc a .n{font-family:var(--font-num);color:var(--red);margin-right:5px;font-size:14px}
+
+/* ============================================================
+   SHELL
+   ============================================================ */
+.section{padding:54px 0 64px;border-bottom:2px solid rgba(25,21,16,.22)}
+.section:last-of-type{border-bottom:0}
+.section-head{margin-bottom:26px}
+.kicker{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-num);font-size:18px;letter-spacing:.1em;color:var(--red);
+}
+.kicker::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 14px);opacity:.35}
+.section h2{margin:8px 0 10px;font-family:var(--font-display);font-weight:400;font-size:clamp(28px,3.8vw,44px);line-height:1.14}
+.section-desc{max-width:820px;margin:0;color:#4C4438;font-family:var(--font-body);font-size:15.5px;line-height:1.85}
+.section-desc strong{color:var(--ink);background:linear-gradient(transparent 58%,var(--yellow-soft) 58%);padding:0 2px}
+
+/* ============================================================
+   COMIC PARTS
+   ============================================================ */
+.panel{background:var(--paper-2);border:var(--line);box-shadow:var(--shadow);padding:18px}
+.panel--wobble{border-radius:var(--wobble-sm)}
+.panel--yellow{background:var(--yellow-soft)}
+.panel--red{background:var(--red-soft)}
+.panel--green{background:var(--green-soft)}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
+  border:2px solid var(--ink);border-radius:999px;background:var(--paper-2);
+  font-size:11.5px;font-weight:800;line-height:1.45;white-space:nowrap;
+}
+.chip--yellow{background:var(--yellow)}
+.chip--red{background:var(--red);color:#fff}
+.chip--blue{background:var(--blue);color:#fff}
+.chip--green{background:var(--green);color:#fff}
+.chip--ink{background:var(--ink);color:var(--paper-2)}
+.sticker{
+  display:inline-block;padding:4px 10px;border:2px solid var(--ink);
+  background:var(--yellow);font-family:var(--font-display);font-size:12px;line-height:1.4;
+  box-shadow:2px 2px 0 var(--ink);transform:rotate(-2.5deg);
+}
+.sticker--red{background:var(--red);color:#fff}
+.sticker--blue{background:var(--blue);color:#fff}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:13px 16px;border:3px solid var(--ink);border-radius:var(--wobble-sm);
+  background:var(--red);color:#fff;font-size:16px;font-weight:800;line-height:1.3;
+  text-decoration:none;cursor:pointer;box-shadow:4px 4px 0 var(--ink);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:3px dashed var(--blue);outline-offset:3px}
+.btn--yellow{background:var(--yellow);color:var(--ink)}
+.btn--ghost{background:var(--paper-2);color:var(--ink)}
+.btn--ink{background:var(--ink);color:var(--paper-2)}
+.btn--sm{padding:9px 14px;font-size:13.5px;box-shadow:3px 3px 0 var(--ink)}
+.btn--inline{width:auto;display:inline-flex}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed;box-shadow:2px 2px 0 var(--ink);transform:none}
+.btn-arrow{font-family:var(--font-num);font-size:19px;line-height:1}
+.bubble{
+  position:relative;background:var(--paper-2);border:3px solid var(--ink);
+  border-radius:16px 16px 16px 4px;padding:12px 14px;
+  box-shadow:3px 3px 0 var(--ink);font-family:var(--font-body);font-size:13.5px;line-height:1.65;
+}
+.bubble::after{
+  content:"";position:absolute;left:22px;bottom:-11px;width:16px;height:16px;
+  background:var(--paper-2);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);
+  transform:rotate(45deg);
+}
+.bubble--yellow{background:var(--yellow-soft)}
+.bubble--yellow::after{background:var(--yellow-soft)}
+.stamp{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:6px 12px;
+  border:4px double currentColor;border-radius:5px;background:rgba(255,248,230,.72);
+  font-family:var(--font-display);font-size:16px;line-height:1;transform:rotate(-7deg);letter-spacing:.04em;
+}
+.stamp--green{color:var(--green)}
+.stamp--red{color:var(--red)}
+.stamp--blue{color:var(--blue)}
+.burst{
+  display:grid;place-items:center;text-align:center;background:var(--yellow);color:var(--ink);
+  clip-path:polygon(50% 0%,61% 17%,79% 8%,82% 28%,100% 36%,87% 51%,99% 67%,79% 74%,78% 95%,58% 87%,45% 100%,34% 83%,14% 91%,16% 70%,1% 60%,14% 46%,2% 29%,22% 23%,23% 3%,42% 13%);
+  font-family:var(--font-display);line-height:1.1;padding:18px;
+}
+.burst--red{background:var(--red);color:#fff}
+.burst--ink{background:var(--ink);color:var(--paper-2)}
+.divider-dash{height:2px;background:repeating-linear-gradient(90deg,var(--ink) 0 7px,transparent 7px 13px);opacity:.3;margin:14px 0}
+
+/* ============================================================
+   FLOW
+   ============================================================ */
+.flow-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0 4px}
+.flow-step{
+  position:relative;padding:14px 13px 13px;background:var(--paper-2);
+  border:var(--line);box-shadow:var(--shadow-sm);
+}
+.flow-step::after{
+  content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  font-family:var(--font-num);font-size:20px;color:var(--red);z-index:2;
+}
+.flow-step:last-child::after{display:none}
+.flow-step .n{font-family:var(--font-num);font-size:12px;color:var(--red);letter-spacing:.1em}
+.flow-step h3{margin:4px 0 4px;font-family:var(--font-display);font-size:18px;font-weight:400}
+.flow-step p{margin:0;font-size:11.5px;line-height:1.6;color:#51483B}
+.flow-step .flow-icon{width:24px;height:24px;color:var(--ink);margin-bottom:4px}
+
+/* ============================================================
+   PHONE FRAME
+   ============================================================ */
+.phone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:42px 30px;align-items:start}
+.phone-card{min-width:0}
+.phone-meta{display:flex;gap:11px;align-items:flex-start;margin-bottom:13px;max-width:375px;margin-left:auto;margin-right:auto}
+.phone-no{font-family:var(--font-num);font-size:27px;line-height:1;color:var(--red);flex:0 0 auto;margin-top:2px}
+.phone-title-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.phone-title{margin:0;font-family:var(--font-display);font-size:18px;font-weight:400;line-height:1.3}
+.phone-note{margin:0;font-size:11.5px;line-height:1.6;color:#5A5145}
+.phone-interact{
+  margin:4px 0 0;font-size:10px;line-height:1.55;color:var(--blue);
+}
+.phone-interact::before{content:"交互 · ";font-weight:800}
+.status{
+  display:inline-flex;align-items:center;padding:1px 6px;border:1.5px solid var(--ink);
+  font-size:8.5px;font-weight:800;line-height:1.5;white-space:nowrap;
+}
+.status--success{background:var(--green);color:#fff}
+.status--loading{background:var(--yellow)}
+.status--error{background:var(--red);color:#fff}
+.status--optional{background:var(--blue);color:#fff}
+.status--core{background:var(--ink);color:var(--paper-2)}
+.phone{
+  position:relative;width:100%;max-width:375px;aspect-ratio:375 / 812;margin:0 auto;
+  background:var(--paper-2);border:4px solid var(--ink);border-radius:34px;
+  box-shadow:10px 10px 0 var(--ink);overflow:hidden;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.phone-card:hover .phone{transform:translate(-2px,-2px);box-shadow:13px 13px 0 var(--ink)}
+.phone__notch{position:absolute;z-index:40;top:8px;left:50%;transform:translateX(-50%);width:74px;height:5px;border-radius:99px;background:var(--ink);opacity:.8}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);font-size:13px}
+.screen--halftone{
+  background-image:radial-gradient(circle, rgba(25,21,16,.09) 1px, transparent 1.2px);
+  background-size:8px 8px;
+}
+.statusbar{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  padding:13px 17px 3px;font-size:10px;font-weight:800;letter-spacing:.03em;
+}
+.capsule{display:inline-flex;align-items:center;gap:5px;border:1.5px solid rgba(25,21,16,.55);border-radius:999px;padding:1px 6px;font-size:9px;line-height:1.6;letter-spacing:.08em}
+.topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 15px 9px}
+.topbar__title{font-family:var(--font-display);font-size:18px;font-weight:400;line-height:1.2}
+.icon-btn{
+  width:29px;height:29px;flex:0 0 auto;display:grid;place-items:center;
+  border:2px solid var(--ink);border-radius:50%;background:var(--paper-2);
+  box-shadow:2px 2px 0 var(--ink);cursor:pointer;
+}
+.icon-btn .ico{width:14px;height:14px}
+.screen__scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 15px 12px;scrollbar-width:none}
+.screen__scroll::-webkit-scrollbar{display:none}
+.screen-foot{flex:0 0 auto;padding:9px 15px 16px;background:linear-gradient(transparent,var(--paper) 28%)}
+.brand{display:flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:16px}
+.brand__mark{
+  display:grid;place-items:center;width:27px;height:27px;border:2px solid var(--ink);
+  background:var(--red);color:#fff;font-family:var(--font-num);font-size:13px;
+  transform:rotate(-4deg);box-shadow:2px 2px 0 var(--ink);
+}
+
+/* ============================================================
+   HOME
+   ============================================================ */
+.home-hero{position:relative;padding:4px 72px 10px 1px}
+.home-hero .sticker{margin-bottom:9px}
+.home-hero h3{margin:0 0 7px;font-family:var(--font-display);font-size:27px;font-weight:400;line-height:1.18}
+.home-hero h3 em{font-style:normal;background:linear-gradient(transparent 60%,var(--yellow) 60%);padding:0 2px}
+.hero-sub{margin:0;font-family:var(--font-body);font-size:12px;line-height:1.6;color:#5A5145}
+.mascot{display:block}
+.mascot--hero{
+  position:absolute;right:-4px;bottom:-4px;width:66px;
+  filter:drop-shadow(3px 3px 0 rgba(25,21,16,.18));
+  animation:float 4.5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.input-card{
+  margin-top:10px;border:3px solid var(--ink);border-radius:13px 8px 15px 9px;
+  background:var(--paper-2);box-shadow:4px 4px 0 var(--ink);padding:11px 12px 9px;
+}
+.input-card textarea{
+  width:100%;min-height:70px;border:0;outline:0;resize:none;background:transparent;
+  color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.65;
+}
+.input-card textarea::placeholder{color:#9A8E79}
+.input-foot{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  border-top:2px dashed rgba(25,21,16,.28);margin-top:4px;padding-top:6px;
+  font-size:9.5px;color:var(--muted);
+}
+.chips-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.chips-row .chip{font-size:9.5px;padding:2px 7px;border-width:1.5px}
+.setting-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.setting{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 8px;
+  border:1.5px dashed rgba(25,21,16,.55);border-radius:7px;
+  background:rgba(255,248,230,.5);font-size:9.5px;color:#5A5145;
+}
+.setting b{color:var(--ink);font-size:9px;letter-spacing:.04em}
+.home-cta{margin-top:11px}
+.home-footnote{
+  display:flex;align-items:flex-start;gap:5px;margin-top:10px;
+  padding:7px 8px;border:1.5px dashed rgba(25,21,16,.5);
+  font-size:9px;line-height:1.55;color:var(--muted);
+}
+.home-footnote .ico{width:12px;height:12px;margin-top:1px;color:var(--green)}
+.daily-card{
+  margin-top:10px;padding:9px 10px;border:2px solid var(--ink);background:var(--yellow-soft);
+  box-shadow:2px 2px 0 var(--ink);position:relative;
+}
+.daily-card__head{display:flex;align-items:center;gap:5px;font-family:var(--font-display);font-size:11px}
+.daily-card__head .mascot{width:20px}
+.daily-card p{margin:4px 0 2px;font-family:var(--font-body);font-size:10px;line-height:1.6}
+.daily-card span{font-size:8px;color:var(--muted)}
+
+/* ============================================================
+   GENERATING
+   ============================================================ */
+.print-stage{position:relative;height:196px;margin-top:4px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.print-sheet{
+  position:absolute;left:50%;bottom:32px;width:148px;height:116px;
+  border:3px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink);
+  transform-origin:50% 100%;
+}
+.print-sheet::before,.print-sheet::after{content:"";position:absolute;left:12px;right:12px;height:4px;background:rgba(25,21,16,.18)}
+.print-sheet::before{top:18px}
+.print-sheet::after{top:30px;right:48px}
+.print-sheet--1{transform:translateX(-50%) rotate(-13deg) translateY(12px);opacity:.38;animation:print1 2.2s ease-in-out infinite}
+.print-sheet--2{transform:translateX(-50%) rotate(-4deg) translateY(4px);opacity:.65;animation:print2 2.2s ease-in-out infinite}
+.print-sheet--3{transform:translateX(-50%) rotate(5deg);opacity:1;animation:print3 2.2s ease-in-out infinite}
+@keyframes print1{0%,100%{transform:translateX(-50%) rotate(-13deg) translateY(12px)}50%{transform:translateX(-50%) rotate(-10deg) translateY(6px)}}
+@keyframes print2{0%,100%{transform:translateX(-50%) rotate(-4deg) translateY(4px)}50%{transform:translateX(-50%) rotate(-1deg) translateY(0)}}
+@keyframes print3{0%,100%{transform:translateX(-50%) rotate(5deg)}50%{transform:translateX(-50%) rotate(2deg) translateY(-4px)}}
+.print-mascot{
+  position:absolute;right:4px;bottom:4px;width:58px;z-index:3;
+  animation:wobble 2.4s ease-in-out infinite;
+}
+@keyframes wobble{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+.print-label{
+  position:absolute;left:0;right:0;bottom:8px;text-align:center;
+  font-family:var(--font-display);font-size:17px;color:var(--red);
+}
+.print-label span{display:inline-block;background:var(--paper);padding:1px 7px}
+.steps-list{display:grid;gap:6px;margin-top:8px}
+.step-row{
+  display:flex;align-items:center;gap:8px;padding:7px 9px;
+  border:2px solid var(--ink);background:var(--paper-2);font-size:10.5px;
+  box-shadow:2px 2px 0 rgba(25,21,16,.8);
+}
+.step-row .dot{
+  width:20px;height:20px;flex:0 0 auto;display:grid;place-items:center;
+  border:2px solid var(--ink);border-radius:50%;font-family:var(--font-num);font-size:10px;background:var(--paper);
+}
+.step-row--done .dot{background:var(--green);color:#fff}
+.step-row--now{background:var(--yellow-soft)}
+.step-row--now .dot{background:var(--yellow)}
+.step-row b{font-size:10.5px}
+.step-row span{margin-left:auto;color:var(--muted);font-size:9px}
+.skeleton-card{margin-top:9px;padding:10px;border:2px solid rgba(25,21,16,.32);background:rgba(255,248,230,.55)}
+.skeleton-line{height:7px;background:rgba(25,21,16,.16);margin-bottom:6px}
+.skeleton-line:nth-child(2){width:74%}
+.skeleton-line:nth-child(3){width:88%}
+.skeleton-line:last-child{margin-bottom:0;width:46%}
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+.error-stage{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:14px}
+.error-mascot{width:92px;margin:4px auto 2px;filter:drop-shadow(3px 3px 0 rgba(25,21,16,.16))}
+.error-badge{
+  display:inline-flex;align-items:center;gap:4px;margin-bottom:4px;
+  padding:2px 8px;border:2px solid var(--ink);background:var(--red);color:#fff;
+  font-size:9px;font-weight:800;letter-spacing:.06em;transform:rotate(-2deg);
+}
+.error-title{margin:2px 0 4px;font-family:var(--font-display);font-size:25px;font-weight:400;line-height:1.25}
+.error-sub{margin:0 0 12px;font-family:var(--font-body);font-size:11.5px;line-height:1.7;color:#5A5145;max-width:270px}
+.error-input{
+  width:100%;padding:10px 11px;border:2px solid var(--ink);background:var(--paper-2);
+  text-align:left;box-shadow:2px 2px 0 var(--ink);font-family:var(--font-body);font-size:11.5px;line-height:1.6;
+}
+.error-input b{display:block;font-family:var(--font-ui);font-size:8px;letter-spacing:.08em;color:var(--muted);margin-bottom:3px}
+.error-code{font-family:var(--font-num);font-size:9px;letter-spacing:.1em;color:var(--muted);margin:8px 0 0}
+.error-actions{width:100%;display:grid;gap:8px;margin-top:12px}
+.error-note{margin-top:9px;font-size:9px;color:var(--muted);line-height:1.55}
+.report-fail-card{
+  width:100%;border:2px dashed rgba(25,21,16,.5);background:rgba(255,248,230,.6);
+  padding:12px;margin-top:2px;text-align:left;
+}
+.report-fail-ring{
+  width:64px;height:64px;border-radius:50%;border:3px dashed rgba(25,21,16,.35);
+  margin:0 auto 8px;display:grid;place-items:center;
+  font-family:var(--font-num);font-size:18px;color:rgba(25,21,16,.35);
+}
+.report-fail-line{height:6px;background:rgba(25,21,16,.14);margin-bottom:6px}
+.report-fail-line:nth-child(2){width:82%}
+.report-fail-line:nth-child(3){width:64%}
+.report-fail-line:last-child{width:44%;margin-bottom:0}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 15px 7px}
+.quiz-head__center{flex:1;display:flex;justify-content:center}
+.quiz-progress{display:flex;gap:4px;padding:0 15px 10px}
+.qstep{
+  flex:1;height:26px;display:grid;place-items:center;border:2px solid var(--ink);
+  background:var(--paper-2);font-family:var(--font-num);font-size:12px;
+}
+.qstep--done{background:var(--green);color:#fff}
+.qstep--now{background:var(--yellow);transform:rotate(-2deg);box-shadow:2px 2px 0 var(--ink)}
+.qcard{
+  position:relative;border:3px solid var(--ink);border-radius:14px 9px 16px 10px;
+  background:var(--paper-2);box-shadow:5px 5px 0 var(--ink);padding:13px 13px 14px;
+}
+.qcard__meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.qtag{display:inline-flex;align-items:center;padding:2px 6px;border:1.5px solid var(--ink);background:var(--yellow);font-size:9px;font-weight:800;line-height:1.5}
+.qtag--ghost{background:transparent;color:var(--muted)}
+.qcard h4{margin:9px 0 0;font-family:var(--font-display);font-size:20px;font-weight:400;line-height:1.45}
+.opts{display:grid;gap:8px;margin-top:13px}
+.opt{
+  display:flex;align-items:center;gap:10px;padding:10px 11px;
+  border:2px solid var(--ink);border-radius:11px 7px 13px 8px;
+  background:var(--paper-2);box-shadow:2px 2px 0 var(--ink);
+  font-size:13px;line-height:1.45;
+}
+.opt .key{
+  width:24px;height:24px;flex:0 0 auto;display:grid;place-items:center;
+  border:2px solid var(--ink);border-radius:50%;background:var(--yellow);
+  font-family:var(--font-num);font-size:12px;
+}
+.opt .state{margin-left:auto;font-size:10.5px;font-weight:800;white-space:nowrap}
+.opt--selected{background:var(--yellow)}
+.opt--correct{background:var(--green-soft);border-color:var(--green)}
+.opt--correct .key{background:var(--green);color:#fff}
+.opt--wrong{background:var(--red-soft);border-color:var(--red)}
+.opt--wrong .key{background:var(--red);color:#fff}
+.opt--dim{opacity:.52}
+.quiz-foot{padding-top:8px}
+.quiz-hint{text-align:center;font-size:9px;color:var(--muted);margin:0 0 6px}
+.xp-chip{
+  display:inline-flex;align-items:center;gap:3px;padding:2px 7px;
+  border:1.5px solid var(--ink);background:var(--yellow);
+  font-family:var(--font-num);font-size:10px;
+}
+.feedback-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.feedback-stamp{transform:rotate(-7deg);font-size:15px;padding:5px 9px}
+.xp-pop{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
+  border:2px solid var(--ink);background:var(--yellow);
+  font-family:var(--font-num);font-size:13px;box-shadow:2px 2px 0 var(--ink);transform:rotate(2deg);
+}
+.explain{margin-top:11px}
+.explain__head{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.explain__head .mascot{width:32px}
+.explain__head b{font-family:var(--font-display);font-size:14px;font-weight:400}
+.explain__body{
+  border:2px solid var(--ink);background:var(--paper-2);padding:9px 10px;
+  font-family:var(--font-body);font-size:11.5px;line-height:1.7;box-shadow:2px 2px 0 var(--ink);
+}
+.explain__body mark{background:var(--yellow);padding:0 2px}
+.explain__fold{
+  display:flex;align-items:center;justify-content:center;gap:4px;margin-top:5px;
+  font-size:9px;color:var(--muted);border-bottom:1px dashed rgba(25,21,16,.35);padding-bottom:4px;
+}
+.mini-action{
+  display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:6px 9px;
+  border:2px solid var(--ink);background:var(--paper-2);box-shadow:2px 2px 0 var(--ink);
+  font-size:9.5px;font-weight:700;cursor:pointer;
+}
+.judge-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.judge{
+  min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  border:3px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink);
+  font-family:var(--font-display);font-size:25px;
+}
+.judge .ico{width:26px;height:26px}
+.judge--yes{background:var(--green-soft)}
+.judge--no{background:var(--red-soft)}
+.judge small{font-family:var(--font-ui);font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.04em}
+.multi-check{
+  width:21px;height:21px;flex:0 0 auto;display:grid;place-items:center;
+  border:2px solid var(--ink);border-radius:4px;background:var(--paper);
+  font-family:var(--font-num);font-size:11px;
+}
+.opt--selected .multi-check{background:var(--ink);color:var(--paper-2)}
+
+/* ============================================================
+   CLEAR
+   ============================================================ */
+.clear-wrap{text-align:center;padding-top:4px}
+.clear-burst{width:150px;height:140px;margin:4px auto 2px;font-size:23px}
+.clear-burst small{display:block;font-family:var(--font-num);font-size:11px;letter-spacing:.1em;margin-top:2px}
+.clear-title{font-family:var(--font-display);font-size:25px;line-height:1.25;margin:2px 0 3px}
+.clear-sub{font-size:10.5px;color:var(--muted);margin:0}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:13px}
+.stat-cell{border:2px solid var(--ink);background:var(--paper-2);box-shadow:2px 2px 0 var(--ink);padding:7px 4px}
+.stat-cell b{display:block;font-family:var(--font-num);font-size:19px;line-height:1.1;color:var(--red)}
+.stat-cell span{display:block;font-size:8.5px;color:var(--muted);margin-top:2px}
+.clear-panel{margin-top:12px;text-align:left;padding:11px 12px}
+.clear-panel h5{margin:0 0 5px;font-family:var(--font-display);font-size:13px;font-weight:400}
+.clear-line{display:flex;align-items:flex-start;gap:6px;font-size:10px;line-height:1.6;margin-top:4px}
+.clear-line .ico{width:13px;height:13px;margin-top:2px;color:var(--green)}
+.clear-line--weak .ico{color:var(--red)}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;width:7px;height:11px;border:1.5px solid var(--ink);animation:fall 3.6s linear infinite}
+.confetti i:nth-child(1){left:12%;background:var(--yellow);animation-delay:-.4s}
+.confetti i:nth-child(2){left:28%;background:var(--red);animation-delay:-1.1s}
+.confetti i:nth-child(3){left:48%;background:var(--blue);animation-delay:-2.2s}
+.confetti i:nth-child(4){left:66%;background:var(--yellow);animation-delay:-.8s}
+.confetti i:nth-child(5){left:82%;background:var(--green);animation-delay:-1.7s}
+.confetti i:nth-child(6){left:92%;background:var(--red);animation-delay:-2.8s}
+@keyframes fall{0%{transform:translateY(-24px) rotate(0)}100%{transform:translateY(240px) rotate(280deg)}}
+.episode-next{
+  margin-top:10px;padding:9px 10px;border:2px solid var(--ink);background:var(--paper-2);
+  text-align:left;box-shadow:2px 2px 0 var(--ink);
+}
+.episode-next__row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.episode-next h5{margin:0;font-family:var(--font-display);font-size:12px;font-weight:400}
+.episode-next p{margin:2px 0 0;font-size:9px;color:var(--muted)}
+
+/* ============================================================
+   REPORT
+   ============================================================ */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.ring{
+  width:132px;aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(var(--red) 0 80%,var(--paper-2) 80% 100%);
+  border:4px solid var(--ink);display:grid;place-items:center;position:relative;
+  box-shadow:4px 4px 0 var(--ink);
+}
+.ring::before{content:"";position:absolute;inset:13px;border-radius:50%;background:var(--paper);border:3px solid var(--ink)}
+.ring__text{position:relative;text-align:center;line-height:1}
+.ring__text b{font-family:var(--font-num);font-size:37px;color:var(--red)}
+.ring__text span{display:block;font-size:8.5px;color:var(--muted);margin-top:4px;letter-spacing:.08em}
+.report-title{font-family:var(--font-display);font-size:20px;text-align:center;margin:8px 0 2px}
+.report-sub{font-size:9.5px;color:var(--muted);text-align:center;margin:0 0 10px}
+.summary-bubble{font-size:11px;line-height:1.7}
+.summary-bubble ol{margin:0;padding-left:16px}
+.summary-bubble li{margin-bottom:3px}
+.report-sec{margin-top:10px;padding:10px 11px}
+.report-sec h5{display:flex;align-items:center;gap:5px;margin:0 0 6px;font-family:var(--font-display);font-size:13px;font-weight:400}
+.report-sec h5 .ico{width:14px;height:14px;color:var(--green)}
+.report-sec--weak h5 .ico{color:var(--red)}
+.report-list{display:flex;flex-wrap:wrap;gap:5px}
+.report-list span{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border:1.5px solid var(--ink);background:var(--green-soft);font-size:9px}
+.report-list--weak span{background:var(--red-soft)}
+.report-advice{margin:0;padding-left:15px;font-size:10px;line-height:1.75}
+.report-advice li{margin-bottom:2px}
+
+/* ============================================================
+   POSTER
+   ============================================================ */
+.poster-preview{
+  position:relative;margin:4px auto 10px;width:88%;border:4px solid var(--ink);
+  background:var(--paper-2);box-shadow:7px 7px 0 var(--red);padding:14px 13px 12px;
+  transform:rotate(-1.4deg);overflow:hidden;
+}
+.poster-preview::before{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle, rgba(25,21,16,.15) 1px, transparent 1.2px);
+  background-size:7px 7px;opacity:.55;pointer-events:none;
+}
+.poster-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.poster-no{font-family:var(--font-num);font-size:11px;letter-spacing:.12em}
+.poster-title{position:relative;margin:11px 0 7px;font-family:var(--font-display);font-size:23px;line-height:1.3}
+.poster-title em{font-style:normal;color:var(--red);-webkit-text-stroke:.5px var(--ink)}
+.poster-quote{
+  position:relative;border-left:4px solid var(--red);padding-left:8px;
+  font-family:var(--font-body);font-size:11px;line-height:1.7;margin-bottom:10px;
+}
+.poster-stats{position:relative;display:flex;gap:6px;margin-bottom:10px}
+.poster-stat{flex:1;border:2px solid var(--ink);background:rgba(255,248,230,.7);padding:4px;text-align:center}
+.poster-stat b{display:block;font-family:var(--font-num);font-size:15px;color:var(--red);line-height:1.1}
+.poster-stat span{display:block;font-size:7.5px;color:var(--muted)}
+.poster-bottom{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.poster-bottom .qr{width:54px;height:54px;border:2px solid var(--ink);background:#fff;padding:3px}
+.poster-bottom p{margin:0;font-size:8px;line-height:1.55;color:var(--muted)}
+.poster-bottom p b{display:block;color:var(--ink);font-size:9px;margin-bottom:2px}
+.poster-actions{display:grid;gap:7px}
+.poster-hint{text-align:center;font-size:9px;color:var(--muted);margin:8px 0 0}
+
+/* ============================================================
+   STATE / SPEC
+   ============================================================ */
+.state-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.state-card{border:2px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink);padding:16px}
+.state-card .state-label{
+  display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border:2px solid var(--ink);
+  font-family:var(--font-num);font-size:11px;letter-spacing:.08em;margin-bottom:8px;
+}
+.state-card h3{margin:0 0 6px;font-family:var(--font-display);font-size:19px;font-weight:400}
+.state-card p{margin:0;font-size:11.5px;line-height:1.7;color:#51483B}
+.state-card:nth-child(1) .state-label{background:var(--yellow)}
+.state-card:nth-child(2) .state-label{background:var(--paper-3)}
+.state-card:nth-child(3) .state-label{background:var(--red);color:#fff}
+.state-card:nth-child(4) .state-label{background:var(--green);color:#fff}
+.spec-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.spec-item{
+  border:2px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink);
+  padding:15px 16px;
+}
+.spec-item h3{margin:0 0 7px;font-family:var(--font-display);font-size:18px;font-weight:400}
+.spec-item ul{margin:0;padding-left:17px;font-size:11.5px;line-height:1.75;color:#51483B}
+.spec-item li{margin-bottom:2px}
+.spec-item code{
+  font-family:var(--font-ui);font-size:10.5px;background:var(--yellow-soft);
+  padding:0 3px;border:1px solid rgba(25,21,16,.25);
+}
+.footer{border-top:4px solid var(--ink);padding:32px 0 42px;background:var(--ink);color:var(--paper-2)}
+.footer .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.footer h3{margin:0 0 4px;font-family:var(--font-display);font-size:24px;font-weight:400}
+.footer p{margin:0;font-size:12px;line-height:1.7;color:rgba(255,248,230,.72)}
+.footer .footer-mark{font-family:var(--font-num);font-size:15px;letter-spacing:.14em;color:var(--yellow)}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1120px){
+  .masthead__inner{grid-template-columns:1fr;gap:30px}
+  .masthead__art{justify-content:flex-start}
+  .phone-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .state-grid{grid-template-columns:repeat(2,1fr)}
+  .spec-list{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  .wrap{padding:0 20px}
+  .flow-strip{grid-template-columns:repeat(2,1fr)}
+  .flow-step::after{display:none}
+  .masthead h1{font-size:clamp(38px,9vw,62px)}
+}
+@media (max-width:760px){
+  .phone-grid{grid-template-columns:1fr}
+  .state-grid{grid-template-columns:1fr}
+  .section{padding:44px 0 52px}
+  .masthead__inner{padding-top:36px;padding-bottom:38px}
+  .mini-cover{box-shadow:8px 8px 0 var(--red),12px 12px 0 var(--ink)}
+}
+@media (max-width:420px){
+  .wrap{padding:0 14px}
+  .statusbar{padding-left:13px;padding-right:13px}
+  .topbar{padding-left:11px;padding-right:11px}
+  .screen__scroll{padding-left:11px;padding-right:11px}
+  .screen-foot{padding-left:11px;padding-right:11px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SVG SPRITE ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mascot" viewBox="0 0 120 132">
+      <ellipse cx="60" cy="119" rx="31" ry="6" fill="rgba(25,21,16,.16)"/>
+      <path d="M60 6C60 6 20 58 20 84c0 20 18 32 40 32s40-12 40-32C100 58 60 6 60 6Z" fill="#191510" stroke="#191510" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M38 74c0-9 6-18 13-25" stroke="#FFF8E6" stroke-width="5" stroke-linecap="round" opacity=".32" fill="none"/>
+      <ellipse cx="45" cy="78" rx="9" ry="10" fill="#FFF8E6"/>
+      <ellipse cx="75" cy="78" rx="9" ry="10" fill="#FFF8E6"/>
+      <circle cx="47" cy="80" r="4" fill="#191510"/>
+      <circle cx="77" cy="80" r="4" fill="#191510"/>
+      <ellipse cx="35" cy="92" rx="6" ry="3" fill="#EE4B2B" opacity=".85"/>
+      <ellipse cx="85" cy="92" rx="6" ry="3" fill="#EE4B2B" opacity=".85"/>
+      <path d="M52 96c4 5 12 5 16 0" stroke="#FFF8E6" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M22 88c-8 2-12 8-12 14" stroke="#191510" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M98 88c8 2 12 8 12 14" stroke="#191510" stroke-width="6" stroke-linecap="round" fill="none"/>
+    </symbol>
+    <symbol id="qr" viewBox="0 0 84 84">
+      <rect width="84" height="84" fill="#fff"/>
+      <g fill="#191510">
+        <rect x="4" y="4" width="22" height="22"/><rect x="8" y="8" width="14" height="14" fill="#fff"/><rect x="12" y="12" width="6" height="6"/>
+        <rect x="58" y="4" width="22" height="22"/><rect x="62" y="8" width="14" height="14" fill="#fff"/><rect x="66" y="12" width="6" height="6"/>
+        <rect x="4" y="58" width="22" height="22"/><rect x="8" y="62" width="14" height="14" fill="#fff"/><rect x="12" y="66" width="6" height="6"/>
+        <rect x="32" y="6" width="6" height="6"/><rect x="44" y="6" width="6" height="6"/><rect x="32" y="18" width="6" height="6"/><rect x="44" y="18" width="6" height="6"/>
+        <rect x="6" y="32" width="6" height="6"/><rect x="18" y="32" width="6" height="6"/><rect x="6" y="44" width="6" height="6"/><rect x="18" y="44" width="6" height="6"/>
+        <rect x="32" y="32" width="6" height="6"/><rect x="44" y="32" width="6" height="6"/><rect x="56" y="32" width="6" height="6"/><rect x="68" y="32" width="6" height="6"/>
+        <rect x="32" y="44" width="6" height="6"/><rect x="44" y="44" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/><rect x="68" y="44" width="6" height="6"/>
+        <rect x="32" y="58" width="6" height="6"/><rect x="44" y="58" width="6" height="6"/><rect x="56" y="58" width="6" height="6"/><rect x="68" y="58" width="6" height="6"/>
+        <rect x="32" y="70" width="6" height="6"/><rect x="44" y="70" width="6" height="6"/><rect x="56" y="70" width="6" height="6"/><rect x="68" y="70" width="6" height="6"/>
+        <rect x="70" y="20" width="6" height="6"/><rect x="20" y="70" width="6" height="6"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ MASTHEAD ============ -->
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <div>
+      <div class="issue-line"><span class="issue-badge">P0</span> 核心闭环 · 高保真原型 · 方向已确认</div>
+      <h1>从一句话，<br><span class="hl">到一话通关。</span></h1>
+      <p class="lede">《AI智学》微信小程序 MVP 全流程 12 屏。浓漫画视觉、原创吉祥物「小墨」、全年龄泛学习语气；覆盖输入、生成、答题、即时反馈、结算、复盘、分享，以及加载与失败状态。</p>
+      <div class="hero-tags">
+        <span class="chip">浓漫画</span>
+        <span class="chip">原创小墨</span>
+        <span class="chip">仅 MVP</span>
+        <span class="chip">全年龄泛学习</span>
+        <span class="chip">一行三列 · 响应式</span>
+      </div>
+    </div>
+    <div class="masthead__art">
+      <div class="mini-cover">
+        <div class="halftone-bg"></div>
+        <div class="mini-cover__bubble">“这次，咱们把知识印成漫画。”</div>
+        <svg class="mascot"><use href="#mascot"/></svg>
+        <div class="mini-cover__title">MVP<br>核心闭环</div>
+        <div class="mini-cover__foot">AI智学 · P0 · 12 SCREENS</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TOC ============ -->
+<nav class="toc" aria-label="目录">
+  <div class="wrap toc__inner">
+    <a href="#flow"><span class="n">01</span>流程总览</a>
+    <a href="#screens"><span class="n">02</span>12 屏原型</a>
+    <a href="#states"><span class="n">03</span>状态覆盖</a>
+    <a href="#spec"><span class="n">04</span>交互规范</a>
+    <a href="#delivery"><span class="n">05</span>交付说明</a>
+  </div>
+</nav>
+
+<main>
+<!-- ============ FLOW ============ -->
+<section class="section" id="flow">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 01 章</div>
+      <h2>一条最短的学习闭环</h2>
+      <p class="section-desc">MVP 不做题库管理、不做用户中心、不做排行榜。只把一件事做到顺滑：<strong>用户输入一个知识点，AI 印出 5 道题，答完立刻讲解，通关后给一份能带走的复盘。</strong></p>
+    </div>
+    <div class="flow-strip">
+      <div class="flow-step">
+        <div class="n">01 / INPUT</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M4 5h16M4 12h10M4 19h16"/><path d="M18 9l3 3-3 3"/></svg>
+        <h3>说一句</h3>
+        <p>一句话或一段文本；空输入禁用提交。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">02 / PRINT</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6"/></svg>
+        <h3>印成题</h3>
+        <p>3–8 秒生成 5 题；失败保留输入可重试。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">03 / PLAY</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h4"/><path d="M15 16l2 2 3-4"/></svg>
+        <h3>闯一话</h3>
+        <p>一屏一格；选择后交卷，立刻看对错和讲解。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">04 / CLEAR</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8"/></svg>
+        <h3>盖个章</h3>
+        <p>通关结算：正确率、XP、知识币、这一话带走什么。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">05 / REVIEW</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/><path d="M7 6l3 3 4-5"/></svg>
+        <h3>收个尾</h3>
+        <p>复盘报告 + 无排名分享海报。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREENS ============ -->
+<section class="section" id="screens">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 02 章</div>
+      <h2>12 屏核心闭环</h2>
+      <p class="section-desc">3 列 × 4 行。第 1 行是输入与生成（含失败），第 2 行是单选与即时反馈，第 3 行是多选、判断与通关，第 4 行是复盘、报告失败与分享海报。<strong>每屏都标注了状态和关键交互。</strong></p>
+    </div>
+
+    <div class="phone-grid">
+
+      <!-- 01 HOME -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">01</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">首页 · 开新坑</h3><span class="status status--core">P0 必做</span></div>
+            <p class="phone-note">大输入框是唯一主角；示例 chips 解决“不知道输入什么”的冷启动。MVP 不登录也能用。</p>
+            <p class="phone-interact">输入为空时按钮禁用；点示例自动填入；支持 500 字。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <div class="brand"><span class="brand__mark">AI</span><span>智学</span></div>
+              <span class="chip chip--yellow">今日一话</span>
+              <button class="icon-btn" aria-label="设置"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L3.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H2v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L3.2 7 6 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L18.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
+            </div>
+            <div class="screen__scroll">
+              <div class="home-hero">
+                <span class="sticker sticker--red">第 001 话</span>
+                <h3>今天想搞懂<br><em>点什么？</em></h3>
+                <p class="hero-sub">说一句话，我把它印成一话闯关漫画。</p>
+                <svg class="mascot mascot--hero"><use href="#mascot"/></svg>
+              </div>
+              <div class="input-card">
+                <textarea placeholder="例如：为什么天空是蓝色的？" aria-label="输入想学的知识"></textarea>
+                <div class="input-foot"><span>支持一句话 / 一段文本</span><span>0 / 500</span></div>
+              </div>
+              <div class="chips-row">
+                <span class="chip">RAG 是什么</span>
+                <span class="chip">光合作用</span>
+                <span class="chip">黑洞会吞掉地球吗</span>
+                <span class="chip">+ 换一批</span>
+              </div>
+              <div class="setting-row">
+                <span class="setting"><b>题量</b> 5 题</span>
+                <span class="setting"><b>难度</b> 混合</span>
+                <span class="setting"><b>题型</b> 单选 / 多选 / 判断</span>
+              </div>
+              <button class="btn home-cta">开始印刷题目 <span class="btn-arrow">→</span></button>
+              <div class="home-footnote">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>
+                <span>MVP 无需登录；生成记录只保存在本机。</span>
+              </div>
+              <div class="daily-card">
+                <div class="daily-card__head"><svg class="mascot"><use href="#mascot"/></svg>小墨的今日一句</div>
+                <p>“蓝光不是被天空染上的，是被空气弹出来的。”</p>
+                <span>今日知识 · 瑞利散射</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 GENERATING -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">02</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">AI 生成中 · 印刷态</h3><span class="status status--loading">加载</span></div>
+            <p class="phone-note">把等待做成“印刷机在工作”：三层纸叠 + 步骤清单。每一步都有明确文案，降低 3–8 秒的焦虑。</p>
+            <p class="phone-interact">禁用重复提交；显示步骤进度；可取消；失败保留输入。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">正在印刷</div>
+              <span style="width:29px"></span>
+            </div>
+            <div class="screen__scroll">
+              <div class="print-stage">
+                <div class="print-sheet print-sheet--1"></div>
+                <div class="print-sheet print-sheet--2"></div>
+                <div class="print-sheet print-sheet--3"></div>
+                <svg class="mascot print-mascot"><use href="#mascot"/></svg>
+                <div class="print-label"><span>正在把知识压成 5 道题…</span></div>
+              </div>
+              <div class="steps-list">
+                <div class="step-row step-row--done"><span class="dot">✓</span><b>联网找料</b><span>8 条线索</span></div>
+                <div class="step-row step-row--done"><span class="dot">✓</span><b>提炼考点</b><span>3 个知识点</span></div>
+                <div class="step-row step-row--now"><span class="dot">3</span><b>印刷题目</b><span>正在排版</span></div>
+                <div class="step-row"><span class="dot">4</span><b>校对讲解</b><span>等待中</span></div>
+              </div>
+              <div class="skeleton-card">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:10px">小墨正在逐题校对，确保答案和讲解都对得上。</div>
+              <p class="tiny" style="text-align:center;margin:10px 0 0">通常需要 3–8 秒，别走开。</p>
+            </div>
+            <div class="screen-foot"><button class="btn btn--ghost btn--sm">取消</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 GENERATION ERROR -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">03</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">生成失败 · 卡纸了</h3><span class="status status--error">失败</span></div>
+            <p class="phone-note">失败不丢输入、不丢面子。用“卡纸”的漫画说法替代技术报错，给一个明确的重试动作。</p>
+            <p class="phone-interact">保留原输入；重试不重复扣次数；可返回修改主题。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">印刷中断</div>
+              <span style="width:29px"></span>
+            </div>
+            <div class="screen__scroll">
+              <div class="error-stage">
+                <svg class="mascot error-mascot"><use href="#mascot"/></svg>
+                <span class="error-badge">AI-500</span>
+                <h4 class="error-title">印刷机卡纸了</h4>
+                <p class="error-sub">网络抖了一下，题目没印出来。你的输入还在，再来一次就好。</p>
+                <div class="error-input"><b>你刚才输入的是</b>为什么天空是蓝色的？</div>
+                <p class="error-code">NETWORK TIMEOUT · 已自动重试 1 次</p>
+                <div class="error-actions">
+                  <button class="btn">再印一次 <span class="btn-arrow">→</span></button>
+                  <button class="btn btn--ghost btn--sm">改一下主题</button>
+                </div>
+                <p class="error-note">不会重复扣金币或次数；也不会把半成品题目交给你。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 SINGLE QUESTION -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">04</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">答题 · 单选未答</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">进度用“格”而不是细进度条；题干最大字号，选项最大点击区。未选择时主按钮禁用。</p>
+            <p class="phone-interact">点选项即选中；交卷后锁定；单选只允许一项。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="quiz-head__center"><span class="chip chip--yellow">第 2 / 5 格</span></div>
+              <span class="xp-chip">120 XP</span>
+            </div>
+            <div class="quiz-progress">
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--now">2</span>
+              <span class="qstep">3</span>
+              <span class="qstep">4</span>
+              <span class="qstep">5</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">单选</span><span class="qtag qtag--ghost">光学 · 简单</span></div>
+                <h4>天空为什么是蓝色的？</h4>
+                <div class="opts">
+                  <div class="opt"><span class="key">A</span><span>太阳光被大气分子散射</span></div>
+                  <div class="opt"><span class="key">B</span><span>海洋把天空染蓝了</span></div>
+                  <div class="opt"><span class="key">C</span><span>天空本身自带蓝色</span></div>
+                  <div class="opt"><span class="key">D</span><span>云层反射了蓝光</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-foot">
+              <p class="quiz-hint">选一个答案，交卷后立刻看讲解</p>
+              <button class="btn" disabled>选好了，交卷</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05 CORRECT -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">05</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">反馈 · 答对</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">答对不是弹窗，是盖章：印章 + XP + 连击。讲解紧跟在题目下面，保持上下文。</p>
+            <p class="phone-interact">即时反馈；讲解可折叠；下一题固定在拇指区。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="quiz-head__center"><span class="chip chip--yellow">第 2 / 5 格</span></div>
+              <span class="xp-chip">140 XP</span>
+            </div>
+            <div class="quiz-progress">
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep">3</span>
+              <span class="qstep">4</span>
+              <span class="qstep">5</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="feedback-head">
+                <span class="stamp stamp--green feedback-stamp">答对啦!</span>
+                <span class="xp-pop">+20 XP &nbsp; 连击 ×2</span>
+              </div>
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">单选</span><span class="qtag qtag--ghost">光学 · 简单</span></div>
+                <h4>天空为什么是蓝色的？</h4>
+                <div class="opts">
+                  <div class="opt opt--correct"><span class="key">A</span><span>太阳光被大气分子散射</span><span class="state">正确</span></div>
+                  <div class="opt opt--dim"><span class="key">B</span><span>海洋把天空染蓝了</span></div>
+                  <div class="opt opt--dim"><span class="key">C</span><span>天空本身自带蓝色</span></div>
+                  <div class="opt opt--dim"><span class="key">D</span><span>云层反射了蓝光</span></div>
+                </div>
+              </div>
+              <div class="explain">
+                <div class="explain__head"><svg class="mascot"><use href="#mascot"/></svg><b>小墨讲一句</b></div>
+                <div class="explain__body">太阳光里有七种颜色。蓝光波长短，最爱被空气分子“弹来弹去”，于是整片天空都在向你发射蓝光。这叫 <mark>瑞利散射</mark>。</div>
+                <div class="explain__fold">收起讲解 <span>⌃</span></div>
+              </div>
+            </div>
+            <div class="screen-foot"><button class="btn btn--yellow">下一格 <span class="btn-arrow">→</span></button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 06 WRONG -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">06</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">反馈 · 答错</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">答错也给完整讲解，不惩罚、不羞辱。错选项标红、正确项标绿，同时给出“再讲一遍”的入口。</p>
+            <p class="phone-interact">答错不扣 XP；正确项高亮；讲解可重播；下一题继续。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="quiz-head__center"><span class="chip chip--yellow">第 2 / 5 格</span></div>
+              <span class="xp-chip">120 XP</span>
+            </div>
+            <div class="quiz-progress">
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--now">2</span>
+              <span class="qstep">3</span>
+              <span class="qstep">4</span>
+              <span class="qstep">5</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="feedback-head">
+                <span class="stamp stamp--red feedback-stamp">差一点!</span>
+                <span class="chip chip--red">正确答案 A</span>
+              </div>
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">单选</span><span class="qtag qtag--ghost">光学 · 简单</span></div>
+                <h4>天空为什么是蓝色的？</h4>
+                <div class="opts">
+                  <div class="opt opt--correct"><span class="key">A</span><span>太阳光被大气分子散射</span><span class="state">正确</span></div>
+                  <div class="opt opt--wrong"><span class="key">B</span><span>海洋把天空染蓝了</span><span class="state">你选的</span></div>
+                  <div class="opt opt--dim"><span class="key">C</span><span>天空本身自带蓝色</span></div>
+                  <div class="opt opt--dim"><span class="key">D</span><span>云层反射了蓝光</span></div>
+                </div>
+              </div>
+              <div class="explain">
+                <div class="explain__head"><svg class="mascot"><use href="#mascot"/></svg><b>小墨补一课</b></div>
+                <div class="explain__body">海洋确实会反射蓝光，但天空的蓝来自 <mark>大气散射</mark>：蓝光波长短，被空气分子散射得更厉害。月球没有大气层，所以月球上的白天天空是黑的。</div>
+                <button class="mini-action">↻ 再讲一遍</button>
+              </div>
+            </div>
+            <div class="screen-foot"><button class="btn btn--yellow">下一格 <span class="btn-arrow">→</span></button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 07 MULTIPLE -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">07</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">答题 · 多选题</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">多选用方形勾选框，和单选的圆形字母明确区分。底部实时显示“已选 2 项”，并提前说明计分规则。</p>
+            <p class="phone-interact">可多选；底部实时计数；交卷后统一判定。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="quiz-head__center"><span class="chip chip--yellow">第 4 / 5 格</span></div>
+              <span class="xp-chip">160 XP</span>
+            </div>
+            <div class="quiz-progress">
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--now">4</span>
+              <span class="qstep">5</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">多选</span><span class="qtag qtag--ghost">选 2 项</span><span class="qtag qtag--ghost">大气 · 中等</span></div>
+                <h4>哪些情况会让天空看起来偏红或偏橙？</h4>
+                <div class="opts">
+                  <div class="opt opt--selected"><span class="multi-check">✓</span><span>日出时，阳光穿过更厚的大气</span></div>
+                  <div class="opt"><span class="multi-check"></span><span>正午阳光垂直照射</span></div>
+                  <div class="opt opt--selected"><span class="multi-check">✓</span><span>日落时，蓝光被散射掉更多</span></div>
+                  <div class="opt"><span class="multi-check"></span><span>云层把阳光全部反射回太空</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-foot">
+              <p class="quiz-hint">已选 2 项 · 少选得一半 XP，错选不得分</p>
+              <button class="btn">交卷，看看对不对</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 08 JUDGE -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">08</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">答题 · 判断题</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">判断题不用小开关，直接给两块大面板。大面积点击区降低误触，也让“对 / 错”成为一格的视觉中心。</p>
+            <p class="phone-interact">点整块面板选择；未选择时交卷禁用；选择后高亮。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="quiz-head__center"><span class="chip chip--yellow">第 5 / 5 格</span></div>
+              <span class="xp-chip">180 XP</span>
+            </div>
+            <div class="quiz-progress">
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--done">✓</span>
+              <span class="qstep qstep--now">5</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">判断</span><span class="qtag qtag--ghost">大气 · 中等</span></div>
+                <h4>在月球上，白天抬头看到的天空也是蓝色的。</h4>
+                <div class="judge-grid">
+                  <div class="judge judge--yes"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>对<small>TRUE</small></div>
+                  <div class="judge judge--no"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>错<small>FALSE</small></div>
+                </div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:12px">提示：月球没有大气层，光不会被散射。</div>
+              <div class="panel panel--yellow" style="margin-top:9px;padding:9px 10px;font-size:10px;line-height:1.65">判断题小技巧：先圈出“也、都、一定、只有”这类绝对词，再判断。</div>
+            </div>
+            <div class="screen-foot"><button class="btn" disabled>选一个再交卷</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 09 CLEAR -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">09</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">通关 · 这一话收尾</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">通关不是“分数结算页”，而是“这一话的封面”：爆炸贴 + 三格数据 + 一句总结。主按钮只有一个。</p>
+            <p class="phone-interact">展示正确率 / XP / 知识币；主 CTA 进入复盘；次 CTA 再来一话。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen screen--halftone">
+            <div class="confetti"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="screen__scroll">
+              <div class="clear-wrap">
+                <div class="burst clear-burst">通关!<small>第 001 话</small></div>
+                <h3 class="clear-title">天空为什么是蓝的</h3>
+                <p class="clear-sub">你答对了 4 / 5 题，小墨给你盖了个章。</p>
+                <div class="stat-row">
+                  <div class="stat-cell"><b>80%</b><span>正确率</span></div>
+                  <div class="stat-cell"><b>+80</b><span>XP</span></div>
+                  <div class="stat-cell"><b>+12</b><span>知识币</span></div>
+                </div>
+                <div class="panel clear-panel">
+                  <h5>这一话你带走了</h5>
+                  <div class="clear-line"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg><span>瑞利散射：蓝光波长短，更容易被散射</span></div>
+                  <div class="clear-line clear-line--weak"><svg class="ico" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>还要再看一眼：月球天空为什么是黑的</span></div>
+                </div>
+                <div style="margin-top:12px"><button class="btn">看复盘报告 <span class="btn-arrow">→</span></button></div>
+                <div style="margin-top:8px"><button class="btn btn--ghost btn--sm">再来一话</button></div>
+                <div class="episode-next">
+                  <div class="episode-next__row"><h5>下一话预告</h5><span class="chip chip--yellow" style="font-size:8px;padding:1px 5px">待解锁</span></div>
+                  <p>日落为什么变红？</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 10 REPORT -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">10</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">复盘报告 · 合上这一话</h3><span class="status status--success">成功</span></div>
+            <p class="phone-note">正确率是入口，不是全部。报告按“三句总结 → 掌握点 → 薄弱点 → 下一步”组织，最后才引导分享。</p>
+            <p class="phone-interact">报告由 AI 生成；失败时保留答案；不展示虚构内容。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">学习复盘</div>
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4M5 14v5h14v-5"/></svg></button>
+            </div>
+            <div class="screen__scroll">
+              <div class="ring-wrap">
+                <div class="ring"><div class="ring__text"><b>80</b><span>正确率 %</span></div></div>
+              </div>
+              <h4 class="report-title">第 001 话 · 天空为什么是蓝的</h4>
+              <p class="report-sub">4 题答对 · 用时 2 分 18 秒 · 最高连击 ×3</p>
+              <div class="bubble summary-bubble">
+                <ol>
+                  <li>你抓住了核心：蓝光波长短，更容易被大气分子散射。</li>
+                  <li>你分清了“散射”和“反射”，没有把天空蓝归因于海洋。</li>
+                  <li>下一步，把瑞利散射迁移到“日落为什么变红”。</li>
+                </ol>
+              </div>
+              <div class="panel report-sec">
+                <h5><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>掌握得不错</h5>
+                <div class="report-list">
+                  <span>瑞利散射</span><span>可见光波长</span><span>天空颜色成因</span>
+                </div>
+              </div>
+              <div class="panel report-sec report-sec--weak">
+                <h5><svg class="ico" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>还要再看一眼</h5>
+                <div class="report-list report-list--weak">
+                  <span>大气层的作用</span><span>月球天空为什么是黑的</span>
+                </div>
+              </div>
+              <div class="panel report-sec">
+                <h5><span style="font-family:var(--font-num);color:var(--red)">NEXT</span>下一步</h5>
+                <ul class="report-advice">
+                  <li>用“日出 / 日落”再练一题，检验迁移。</li>
+                  <li>合上手机，用 30 秒把瑞利散射讲给朋友听。</li>
+                  <li>明天回来做 1 道旧题，记忆会更牢。</li>
+                </ul>
+              </div>
+              <button class="btn" style="margin-top:12px">生成分享海报 <svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4M5 14v5h14v-5"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 11 REPORT ERROR -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">11</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">报告失败 · 答案还在</h3><span class="status status--error">失败</span></div>
+            <p class="phone-note">报告生成失败时，不展示空报告或编造结论。保留全部答案，给一个明确的重试入口。</p>
+            <p class="phone-interact">保留 5 道答案；重试只重新生成报告；可先返回首页。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">学习复盘</div>
+              <span style="width:29px"></span>
+            </div>
+            <div class="screen__scroll">
+              <div class="error-stage">
+                <svg class="mascot error-mascot"><use href="#mascot"/></svg>
+                <span class="error-badge">RPT-500</span>
+                <h4 class="error-title">报告没印出来</h4>
+                <p class="error-sub">你的 5 道答案已经保留，重试不会丢。小墨不会给你一份编出来的报告。</p>
+                <div class="report-fail-card">
+                  <div class="report-fail-ring">…</div>
+                  <div class="report-fail-line"></div>
+                  <div class="report-fail-line"></div>
+                  <div class="report-fail-line"></div>
+                </div>
+                <p class="error-code">REPORT TIMEOUT · 答案已本地保存</p>
+                <div class="error-actions">
+                  <button class="btn">重新生成报告 <span class="btn-arrow">→</span></button>
+                  <button class="btn btn--ghost btn--sm">先返回首页</button>
+                </div>
+                <p class="error-note">失败时不展示虚构报告；重试成功后再进入分享。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 12 POSTER -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">12</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">分享海报 · 这一话的封面</h3><span class="status status--optional">P0 可选</span></div>
+            <p class="phone-note">不做排名、不晒分数，只晒“我学会了什么”。海报 = 一话封面 + 一句金句 + 小程序码。</p>
+            <p class="phone-interact">保存到相册 / 分享给好友；小程序码为占位；可后置。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen screen--halftone">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">分享这一话</div>
+              <span style="width:29px"></span>
+            </div>
+            <div class="screen__scroll">
+              <div class="poster-preview">
+                <div class="poster-top"><span class="poster-no">AI智学 · VOL.001</span><span class="chip chip--red" style="font-size:7.5px;padding:1px 5px">通关</span></div>
+                <div class="poster-title">我把<br><em>天空为什么是蓝的</em><br>学明白了。</div>
+                <div class="poster-quote">“蓝光波长短，最爱被空气弹来弹去。”</div>
+                <div class="poster-stats">
+                  <div class="poster-stat"><b>80%</b><span>正确率</span></div>
+                  <div class="poster-stat"><b>4/5</b><span>答对</span></div>
+                  <div class="poster-stat"><b>×3</b><span>最高连击</span></div>
+                </div>
+                <div class="poster-bottom">
+                  <div><p><b>扫码也来闯一话</b>输入任意知识，AI 给你印题</p></div>
+                  <svg class="qr"><use href="#qr"/></svg>
+                </div>
+              </div>
+              <div class="poster-actions">
+                <button class="btn">保存到相册</button>
+                <button class="btn btn--ghost btn--sm">分享给好友</button>
+              </div>
+              <p class="poster-hint">海报不含排名，避免学习攀比。</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATES ============ -->
+<section class="section" id="states">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 03 章</div>
+      <h2>状态覆盖：加载、空、失败、成功</h2>
+      <p class="section-desc">MVP 也必须把状态做全。尤其是 AI 产品：等待和失败是常态，不能让用户看到白屏、假数据或技术报错。</p>
+    </div>
+    <div class="state-grid">
+      <div class="state-card">
+        <span class="state-label">LOADING</span>
+        <h3>加载</h3>
+        <p>生成中显示三层纸叠 + 4 步进度 + 骨架屏；禁用重复提交；3–8 秒内有明确进度感。</p>
+      </div>
+      <div class="state-card">
+        <span class="state-label">EMPTY</span>
+        <h3>空</h3>
+        <p>输入为空时主按钮禁用；示例 chips 兜底；不展示空白页。没有历史记录时不硬塞“空档案”。</p>
+      </div>
+      <div class="state-card">
+        <span class="state-label">ERROR</span>
+        <h3>失败</h3>
+        <p>生成失败保留输入；报告失败保留答案；只给“重试 / 返回”，不展示半成品题目或虚构报告。</p>
+      </div>
+      <div class="state-card">
+        <span class="state-label">SUCCESS</span>
+        <h3>成功</h3>
+        <p>即时反馈 → 通关结算 → 复盘报告 → 分享海报。每一步都有明确的下一步动作。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPEC ============ -->
+<section class="section" id="spec">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 04 章</div>
+      <h2>关键交互规范</h2>
+      <p class="section-desc">给前端和 AI 后端的对齐清单。每一条都能直接落到 Taro 页面或 FastAPI 接口里。</p>
+    </div>
+    <div class="spec-list">
+      <div class="spec-item">
+        <h3>输入 / Input</h3>
+        <ul>
+          <li>单次输入上限 <code>500</code> 字；空输入时主按钮禁用。</li>
+          <li>点击示例 chip 自动填入并聚焦输入框。</li>
+          <li>MVP 不登录；生成记录只存本机，不上传用户身份。</li>
+        </ul>
+      </div>
+      <div class="spec-item">
+        <h3>生成 / Generate</h3>
+        <ul>
+          <li>调用 <code>POST /api/v1/quiz/generate</code>，默认 5 题。</li>
+          <li>生成中禁用重复提交；显示 4 步进度；支持取消。</li>
+          <li>失败保留输入；重试不重复扣次数；不展示脏数据。</li>
+        </ul>
+      </div>
+      <div class="spec-item">
+        <h3>答题 / Quiz</h3>
+        <ul>
+          <li>一屏一题；单选 / 多选 / 判断三种题型。</li>
+          <li>选择后交卷；提交后锁定该题；立即展示对错与讲解。</li>
+          <li>讲解可折叠；答错不扣 XP，只少拿 XP。</li>
+        </ul>
+      </div>
+      <div class="spec-item">
+        <h3>结算 / 报告</h3>
+        <ul>
+          <li>前端本地统计正确率、用时、连击；一次性提交答题记录。</li>
+          <li>报告失败保留答案；重试只重新生成报告。</li>
+          <li>报告字段：正确率、掌握点、薄弱点、三句总结、建议、金句。</li>
+        </ul>
+      </div>
+      <div class="spec-item">
+        <h3>海报 / Share</h3>
+        <ul>
+          <li>海报不含排名，只展示正确率、答对数、最高连击。</li>
+          <li>保存 / 分享两个动作分开；小程序码为占位。</li>
+          <li>若工期紧，可把海报后置到 P0 尾或 Phase 5。</li>
+        </ul>
+      </div>
+      <div class="spec-item">
+        <h3>视觉 / Visual</h3>
+        <ul>
+          <li>正文 <code>15–16px</code>、行高 <code>1.7</code>；题目字号 ≥ <code>20px</code>。</li>
+          <li>点击区 ≥ <code>44px</code>；对错用颜色 + 图标 + 文字三重编码。</li>
+          <li>漫画装饰只出现在反馈 / 奖励 / 空态；不干扰题目阅读。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DELIVERY ============ -->
+<section class="section" id="delivery">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 05 章</div>
+      <h2>交付说明</h2>
+      <p class="section-desc">本册只覆盖已确认的 MVP 范围。P1 的学习档案、错题本、多源输入、RAG，P2 的 PK / 排行榜，P3 的付费，不在本册展开。</p>
+    </div>
+    <div class="panel panel--yellow" style="box-shadow:4px 4px 0 var(--ink)">
+      <p style="margin:0 0 10px;font-family:var(--font-body);font-size:14px;line-height:1.8"><strong>下一步建议：</strong>先用本册对齐前端页面与后端接口，再进入 Taro 4.x 实现。首页与闯关页可以先用静态 JSON 跑通交互，再接真实 <code>quiz/generate</code> 接口；报告页最后接 <code>report/generate</code>，避免前端等待 AI 链路。</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span class="chip chip--ink">Taro 4.x + React + TS</span>
+        <span class="chip">FastAPI</span>
+        <span class="chip">DeepSeek deepseek-chat</span>
+        <span class="chip">5 题 / 3 题型</span>
+        <span class="chip">无登录 MVP</span>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:12px">文件：<code>01_核心闭环_MVP.html</code> · 桌面 3 列 / 平板 2 列 / 手机 1 列 · 字体 CDN 不可用时自动回退到幼圆 / 楷体。</p>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <h3>AI智学 · 把知识印成一话漫画</h3>
+      <p>核心闭环 MVP 高保真原型 · 12 屏 · 方向已确认：浓漫画 / 原创小墨 / 仅 MVP / 全年龄泛学习</p>
+    </div>
+    <div class="footer-mark">PAPER · INK · PLAY</div>
+  </div>
+</footer>
+
+</body>
+</html>

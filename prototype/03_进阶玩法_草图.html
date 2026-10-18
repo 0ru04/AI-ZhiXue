@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI智学 · 进阶玩法草图（P2/P3）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --paper:#F4EBD3;
+  --paper-2:#FFF8E6;
+  --paper-3:#FFFDF5;
+  --ink:#191510;
+  --red:#EE4B2B;
+  --red-dark:#C9381D;
+  --yellow:#F5C542;
+  --yellow-soft:#FBE08A;
+  --blue:#3D86C6;
+  --blue-soft:#DDECF7;
+  --green:#2F9E62;
+  --green-soft:#DFF1E6;
+  --red-soft:#FBE1DB;
+  --muted:#776C5A;
+  --line:3px solid var(--ink);
+  --shadow:5px 5px 0 var(--ink);
+  --shadow-sm:3px 3px 0 var(--ink);
+  --wobble-sm:14px 8px 16px 9px / 9px 15px 8px 14px;
+  --font-display:"ZCOOL KuaiLe","ZCOOL QingKe HuangYou","YouYuan","幼圆","Microsoft YaHei",sans-serif;
+  --font-body:"LXGW WenKai","KaiTi","楷体","Microsoft YaHei",sans-serif;
+  --font-ui:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --font-num:"Bangers","Impact","Arial Black",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{
+  margin:0;color:var(--ink);font-family:var(--font-ui);line-height:1.7;overflow-x:hidden;
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 6%, rgba(238,75,43,.1), transparent 26%),
+    radial-gradient(circle at 88% 14%, rgba(245,197,66,.2), transparent 28%),
+    radial-gradient(circle, rgba(25,21,16,.085) 1px, transparent 1.25px);
+  background-size:auto,auto,8px 8px;
+}
+img,svg{display:block;max-width:100%}
+button{font:inherit;color:inherit}
+a{color:inherit}
+::selection{background:var(--yellow);color:var(--ink)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+.ico{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.tiny{font-size:10.5px;color:var(--muted);line-height:1.55}
+code{font-family:var(--font-ui);font-size:10.5px;background:var(--yellow-soft);padding:0 3px;border:1px solid rgba(25,21,16,.25)}
+
+/* ============================================================
+   MASTHEAD
+   ============================================================ */
+.masthead{position:relative;border-bottom:4px solid var(--ink);overflow:hidden}
+.masthead::before{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle, rgba(25,21,16,.15) 1.2px, transparent 1.4px);
+  background-size:9px 9px;opacity:.28;pointer-events:none;
+}
+.masthead__inner{position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:46px;align-items:center;padding-top:44px;padding-bottom:40px}
+.issue-line{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:800;letter-spacing:.1em}
+.issue-badge{display:inline-flex;align-items:center;padding:3px 9px;background:var(--red);color:#fff;border:2px solid var(--ink);font-family:var(--font-num);font-size:14px;letter-spacing:.08em;transform:rotate(-2deg)}
+.masthead h1{margin:14px 0 16px;font-family:var(--font-display);font-weight:400;font-size:clamp(42px,5.6vw,74px);line-height:1.04}
+.masthead h1 .hl{position:relative;display:inline-block;color:var(--red);text-shadow:3px 3px 0 var(--ink)}
+.masthead h1 .hl::after{content:"";position:absolute;left:-2px;right:-2px;bottom:4px;height:12px;background:var(--yellow);z-index:-1;transform:rotate(-1.2deg)}
+.lede{max-width:680px;margin:0 0 20px;font-family:var(--font-body);font-size:16px;line-height:1.85;color:#3A332A}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.masthead__art{display:flex;justify-content:center}
+.mini-cover{position:relative;width:min(300px,100%);padding:18px;border:4px solid var(--ink);background:var(--paper-3);box-shadow:10px 10px 0 var(--yellow),15px 15px 0 var(--ink);transform:rotate(1.5deg);overflow:hidden}
+.mini-cover::after{content:"";position:absolute;inset:9px;border:2px solid rgba(25,21,16,.2);pointer-events:none}
+.mini-cover .halftone-bg{position:absolute;inset:0;background-image:radial-gradient(circle, rgba(25,21,16,.18) 1.1px, transparent 1.3px);background-size:7px 7px;opacity:.5}
+.mini-cover .mascot{position:relative;z-index:2;width:112px;margin:18px auto 0;filter:drop-shadow(4px 4px 0 rgba(25,21,16,.15))}
+.mini-cover__bubble{position:absolute;top:58px;right:8px;z-index:3;max-width:130px;background:var(--paper-2);border:3px solid var(--ink);padding:8px 10px;font-family:var(--font-body);font-size:11.5px;line-height:1.55;box-shadow:3px 3px 0 var(--ink);transform:rotate(-3deg)}
+.mini-cover__bubble::after{content:"";position:absolute;left:16px;bottom:-9px;width:14px;height:14px;background:var(--paper-2);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg)}
+.mini-cover__title{position:relative;z-index:2;margin-top:16px;text-align:center;font-family:var(--font-display);font-size:28px;line-height:1.12;color:var(--red);-webkit-text-stroke:1.2px var(--ink);text-shadow:2px 2px 0 var(--yellow),4px 4px 0 var(--ink);transform:rotate(-2deg)}
+.mini-cover__foot{position:relative;z-index:2;margin-top:10px;text-align:center;font-family:var(--font-num);font-size:11px;letter-spacing:.14em;color:var(--muted)}
+.mini-vs{position:absolute;z-index:3;top:16px;left:14px;width:42px;height:42px;display:grid;place-items:center;background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:50%;font-family:var(--font-num);font-size:17px;transform:rotate(-12deg);box-shadow:2px 2px 0 var(--ink)}
+
+/* ============================================================
+   TOC / SHELL
+   ============================================================ */
+.toc{position:sticky;top:0;z-index:80;background:rgba(244,235,211,.94);backdrop-filter:blur(8px);border-bottom:3px solid var(--ink)}
+.toc__inner{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-top:9px;padding-bottom:9px}
+.toc__inner::-webkit-scrollbar{display:none}
+.toc a{flex:0 0 auto;text-decoration:none;padding:5px 11px;border:2px solid transparent;font-size:12.5px;font-weight:800;white-space:nowrap}
+.toc a:hover,.toc a:focus-visible{border-color:var(--ink);background:var(--yellow);outline:none}
+.toc a .n{font-family:var(--font-num);color:var(--red);margin-right:5px;font-size:14px}
+.section{padding:54px 0 64px;border-bottom:2px solid rgba(25,21,16,.22)}
+.section:last-of-type{border-bottom:0}
+.section-head{margin-bottom:26px}
+.kicker{display:flex;align-items:center;gap:10px;font-family:var(--font-num);font-size:18px;letter-spacing:.1em;color:var(--red)}
+.kicker::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 14px);opacity:.35}
+.section h2{margin:8px 0 10px;font-family:var(--font-display);font-weight:400;font-size:clamp(28px,3.8vw,44px);line-height:1.14}
+.section-desc{max-width:820px;margin:0;color:#4C4438;font-family:var(--font-body);font-size:15.5px;line-height:1.85}
+.section-desc strong{color:var(--ink);background:linear-gradient(transparent 58%,var(--yellow-soft) 58%);padding:0 2px}
+.section-note{display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border:2px solid var(--ink);background:rgba(255,248,230,.66);font-family:var(--font-body);font-size:13px;line-height:1.7}
+.section-note .ico{width:19px;height:19px;margin-top:3px;color:var(--red)}
+
+/* ============================================================
+   COMIC PARTS
+   ============================================================ */
+.panel{background:var(--paper-2);border:var(--line);box-shadow:var(--shadow);padding:18px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:2px solid var(--ink);border-radius:999px;background:var(--paper-2);font-size:11.5px;font-weight:800;line-height:1.45;white-space:nowrap}
+.chip--yellow{background:var(--yellow)}
+.chip--red{background:var(--red);color:#fff}
+.chip--blue{background:var(--blue);color:#fff}
+.chip--green{background:var(--green);color:#fff}
+.chip--ink{background:var(--ink);color:var(--paper-2)}
+.sticker{display:inline-block;padding:4px 10px;border:2px solid var(--ink);background:var(--yellow);font-family:var(--font-display);font-size:12px;line-height:1.4;box-shadow:2px 2px 0 var(--ink);transform:rotate(-2.5deg)}
+.sticker--red{background:var(--red);color:#fff}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 15px;border:3px solid var(--ink);border-radius:var(--wobble-sm);background:var(--red);color:#fff;font-size:15px;font-weight:800;line-height:1.3;text-decoration:none;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .12s ease, box-shadow .12s ease}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:3px dashed var(--blue);outline-offset:3px}
+.btn--yellow{background:var(--yellow);color:var(--ink)}
+.btn--ghost{background:var(--paper-2);color:var(--ink)}
+.btn--ink{background:var(--ink);color:var(--paper-2)}
+.btn--sm{padding:8px 12px;font-size:12.5px;box-shadow:3px 3px 0 var(--ink)}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed;box-shadow:2px 2px 0 var(--ink);transform:none}
+.btn-arrow{font-family:var(--font-num);font-size:18px;line-height:1}
+.bubble{position:relative;background:var(--paper-2);border:3px solid var(--ink);border-radius:16px 16px 16px 4px;padding:11px 13px;box-shadow:3px 3px 0 var(--ink);font-family:var(--font-body);font-size:13px;line-height:1.65}
+.bubble::after{content:"";position:absolute;left:22px;bottom:-11px;width:16px;height:16px;background:var(--paper-2);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg)}
+.bubble--yellow{background:var(--yellow-soft)}
+.bubble--yellow::after{background:var(--yellow-soft)}
+.stamp{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:6px 12px;border:4px double currentColor;border-radius:5px;background:rgba(255,248,230,.72);font-family:var(--font-display);font-size:16px;line-height:1;transform:rotate(-7deg);letter-spacing:.04em}
+.stamp--green{color:var(--green)}
+.stamp--red{color:var(--red)}
+.stamp--blue{color:var(--blue)}
+.burst{display:grid;place-items:center;text-align:center;background:var(--yellow);color:var(--ink);clip-path:polygon(50% 0%,61% 17%,79% 8%,82% 28%,100% 36%,87% 51%,99% 67%,79% 74%,78% 95%,58% 87%,45% 100%,34% 83%,14% 91%,16% 70%,1% 60%,14% 46%,2% 29%,22% 23%,23% 3%,42% 13%);font-family:var(--font-display);line-height:1.1;padding:18px}
+.burst--red{background:var(--red);color:#fff}
+.mascot{display:block}
+
+/* ============================================================
+   FLOW
+   ============================================================ */
+.flow-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:22px 0 4px}
+.flow-step{position:relative;padding:14px 13px 13px;background:var(--paper-2);border:var(--line);box-shadow:var(--shadow-sm)}
+.flow-step::after{content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-family:var(--font-num);font-size:20px;color:var(--red);z-index:2}
+.flow-step:last-child::after{display:none}
+.flow-step .n{font-family:var(--font-num);font-size:12px;color:var(--red);letter-spacing:.1em}
+.flow-step h3{margin:4px 0 4px;font-family:var(--font-display);font-size:18px;font-weight:400}
+.flow-step p{margin:0;font-size:11.5px;line-height:1.6;color:#51483B}
+.flow-step .flow-icon{width:24px;height:24px;color:var(--ink);margin-bottom:4px}
+
+/* ============================================================
+   PHONE FRAME
+   ============================================================ */
+.phone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:42px 30px;align-items:start}
+.phone-card{min-width:0}
+.phone-meta{display:flex;gap:11px;align-items:flex-start;margin-bottom:13px;max-width:375px;margin-left:auto;margin-right:auto}
+.phone-no{font-family:var(--font-num);font-size:27px;line-height:1;color:var(--red);flex:0 0 auto;margin-top:2px}
+.phone-title-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.phone-title{margin:0;font-family:var(--font-display);font-size:18px;font-weight:400;line-height:1.3}
+.phone-note{margin:0;font-size:11.5px;line-height:1.6;color:#5A5145}
+.phone-interact{margin:4px 0 0;font-size:10px;line-height:1.55;color:var(--blue)}
+.phone-interact::before{content:"交互 · ";font-weight:800}
+.status{display:inline-flex;align-items:center;padding:1px 6px;border:1.5px solid var(--ink);font-size:8.5px;font-weight:800;line-height:1.5;white-space:nowrap}
+.status--p2{background:var(--red);color:#fff}
+.status--p3{background:var(--ink);color:var(--paper-2)}
+.status--optional{background:var(--paper-3)}
+.status--new{background:var(--yellow)}
+.phone{position:relative;width:100%;max-width:375px;aspect-ratio:375 / 812;margin:0 auto;background:var(--paper-2);border:4px solid var(--ink);border-radius:34px;box-shadow:10px 10px 0 var(--ink);overflow:hidden;transition:transform .18s ease, box-shadow .18s ease}
+.phone::after{content:"";position:absolute;inset:7px;border:1.5px dashed rgba(25,21,16,.16);border-radius:28px;pointer-events:none;z-index:39}
+.phone-card:hover .phone{transform:translate(-2px,-2px);box-shadow:13px 13px 0 var(--ink)}
+.phone__notch{position:absolute;z-index:40;top:8px;left:50%;transform:translateX(-50%);width:74px;height:5px;border-radius:99px;background:var(--ink);opacity:.8}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);font-size:13px}
+.screen--halftone{background-image:radial-gradient(circle, rgba(25,21,16,.09) 1px, transparent 1.2px);background-size:8px 8px}
+.statusbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:13px 17px 3px;font-size:10px;font-weight:800;letter-spacing:.03em}
+.capsule{display:inline-flex;align-items:center;gap:5px;border:1.5px solid rgba(25,21,16,.55);border-radius:999px;padding:1px 6px;font-size:9px;line-height:1.6;letter-spacing:.08em}
+.topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 15px 9px}
+.topbar__title{font-family:var(--font-display);font-size:18px;font-weight:400;line-height:1.2}
+.icon-btn{width:29px;height:29px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--paper-2);box-shadow:2px 2px 0 var(--ink);cursor:pointer}
+.icon-btn .ico{width:14px;height:14px}
+.screen__scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 15px 12px;scrollbar-width:none}
+.screen__scroll::-webkit-scrollbar{display:none}
+.screen-foot{flex:0 0 auto;padding:9px 15px 16px;background:linear-gradient(transparent,var(--paper) 28%)}
+.brand{display:flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:16px}
+.brand__mark{display:grid;place-items:center;width:27px;height:27px;border:2px solid var(--ink);background:var(--red);color:#fff;font-family:var(--font-num);font-size:13px;transform:rotate(-4deg);box-shadow:2px 2px 0 var(--ink)}
+
+/* ============================================================
+   PK COMPONENTS
+   ============================================================ */
+.versus{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:3px;padding:12px 10px;border:3px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink)}
+.vs-side{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.avatar{width:42px;height:42px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--yellow);font-family:var(--font-display);font-size:15px}
+.avatar--blue{background:var(--blue);color:#fff}
+.vs-side b{font-size:9.5px}
+.vs-side strong{font-family:var(--font-num);font-size:19px;color:var(--red)}
+.vs-mark{font-family:var(--font-num);font-size:26px;color:var(--ink);transform:rotate(-6deg)}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.mode-card{padding:8px;border:2px solid var(--ink);background:var(--paper-2);box-shadow:2px 2px 0 var(--ink);font-size:9px;line-height:1.5}
+.mode-card b{display:block;font-family:var(--font-display);font-size:12px;font-weight:400;margin-bottom:1px}
+.mode-card span{color:var(--muted)}
+.battle-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:9px}
+.battle-stat{border:2px solid var(--ink);background:var(--paper-2);padding:5px;text-align:center;box-shadow:1px 1px 0 var(--ink)}
+.battle-stat b{display:block;font-family:var(--font-num);font-size:15px;color:var(--red);line-height:1.1}
+.battle-stat span{display:block;font-size:7px;color:var(--muted)}
+
+.invite-card{
+  position:relative;margin-top:4px;padding:13px 12px;border:3px solid var(--ink);background:var(--paper-2);
+  box-shadow:5px 5px 0 var(--red);transform:rotate(-1deg);overflow:hidden;
+}
+.invite-card::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle, rgba(25,21,16,.12) 1px, transparent 1.2px);background-size:7px 7px;opacity:.5;pointer-events:none}
+.invite-card__top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.invite-card__title{position:relative;margin:9px 0 4px;font-family:var(--font-display);font-size:21px;line-height:1.3}
+.invite-card__title em{font-style:normal;color:var(--red)}
+.invite-card__sub{position:relative;font-family:var(--font-body);font-size:10px;line-height:1.6;color:#51483B;margin:0 0 8px}
+.invite-card__bottom{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.invite-card__bottom .qr{width:52px;height:52px;border:2px solid var(--ink);background:#fff;padding:3px}
+.invite-card__bottom p{margin:0;font-size:8px;line-height:1.55;color:var(--muted)}
+.invite-card__bottom p b{display:block;color:var(--ink);font-size:9px;margin-bottom:2px}
+.waiting{display:flex;align-items:center;gap:6px;margin-top:10px;padding:7px 9px;border:2px dashed rgba(25,21,16,.55);font-size:9px;color:#51483B}
+.waiting .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
+
+.battle-head{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center;padding:2px 15px 10px}
+.battle-side{min-width:0}
+.battle-side span{display:block;font-size:8px;color:var(--muted)}
+.battle-side b{display:block;font-family:var(--font-num);font-size:14px;line-height:1.1}
+.battle-side--right{text-align:right}
+.battle-bar{height:8px;border:2px solid var(--ink);background:var(--paper-2);margin-top:2px}
+.battle-bar i{display:block;height:100%;background:var(--yellow);border-right:2px solid var(--ink)}
+.battle-bar--blue i{background:var(--blue)}
+.battle-mini{margin-top:9px;padding:8px 9px;border:2px solid var(--ink);background:var(--paper-2);box-shadow:2px 2px 0 var(--ink)}
+.battle-mini>b{font-family:var(--font-display);font-size:11px;font-weight:400}
+.battle-mini__row{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:8px}
+.battle-mini__row b{width:26px;flex:0 0 auto;font-weight:800}
+.battle-dots{display:flex;gap:3px;flex:1}
+.battle-dot{flex:1;height:14px;border:1.5px solid var(--ink);background:var(--paper-3);display:grid;place-items:center;font-family:var(--font-num);font-size:7px}
+.battle-dot--done{background:var(--green);color:#fff}
+.battle-dot--now{background:var(--yellow)}
+.battle-dot--fail{background:var(--red-soft);color:var(--red-dark)}
+.timer{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border:2px solid var(--ink);background:var(--red);color:#fff;font-family:var(--font-num);font-size:13px;box-shadow:2px 2px 0 var(--ink)}
+.qcard{position:relative;border:3px solid var(--ink);border-radius:14px 9px 16px 10px;background:var(--paper-2);box-shadow:5px 5px 0 var(--ink);padding:12px}
+.qcard__meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.qtag{display:inline-flex;align-items:center;padding:2px 6px;border:1.5px solid var(--ink);background:var(--yellow);font-size:9px;font-weight:800;line-height:1.5}
+.qtag--ghost{background:transparent;color:var(--muted)}
+.qcard h4{margin:8px 0 0;font-family:var(--font-display);font-size:19px;font-weight:400;line-height:1.45}
+.opts{display:grid;gap:7px;margin-top:11px}
+.opt{display:flex;align-items:center;gap:9px;padding:9px 10px;border:2px solid var(--ink);border-radius:11px 7px 13px 8px;background:var(--paper-2);box-shadow:2px 2px 0 var(--ink);font-size:12px;line-height:1.45}
+.opt .key{width:22px;height:22px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--yellow);font-family:var(--font-num);font-size:11px}
+.opt--selected{background:var(--yellow)}
+.opt--dim{opacity:.55}
+
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:8px 0 10px}
+.podium-side{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8px}
+.podium-side .p-avatar{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--paper-2);font-family:var(--font-display);font-size:12px}
+.podium-side .p-base{width:52px;height:34px;display:grid;place-items:center;border:2px solid var(--ink);background:var(--paper-2);font-family:var(--font-num);font-size:12px}
+.podium-side--1 .p-base{height:50px;background:var(--yellow)}
+.podium-side--2 .p-base{height:40px;background:var(--paper-3)}
+.podium-side--3 .p-base{height:32px;background:var(--red-soft)}
+.rank-list{display:grid;gap:5px;margin-top:8px}
+.rank-row{display:flex;align-items:center;gap:7px;padding:5px 8px;border:2px solid var(--ink);background:var(--paper-2);font-size:9.5px}
+.rank-row--me{background:var(--yellow-soft);box-shadow:2px 2px 0 var(--ink)}
+.rank-no{width:17px;font-family:var(--font-num);font-size:11px;color:var(--red);text-align:center}
+.rank-avatar{width:21px;height:21px;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper);font-size:8px}
+.rank-row .score{margin-left:auto;font-family:var(--font-num);font-size:11px}
+.rank-row .medal{width:16px;text-align:center;font-family:var(--font-num);font-size:9px;color:var(--muted)}
+
+.question-image{position:relative;border:3px solid var(--ink);background:var(--blue-soft);margin-top:9px;overflow:hidden;box-shadow:2px 2px 0 var(--ink)}
+.image-badge{position:absolute;top:5px;right:5px;padding:1px 6px;border:1.5px solid var(--ink);background:var(--yellow);font-size:7.5px;font-weight:800;transform:rotate(2deg)}
+.image-note{margin:5px 0 0;font-size:8px;color:var(--muted);line-height:1.5}
+
+.voice-card{margin-top:9px;padding:12px;border:3px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink);text-align:center}
+.mic-btn{
+  width:64px;height:64px;margin:2px auto 6px;display:grid;place-items:center;border:3px solid var(--ink);border-radius:50%;
+  background:var(--red);color:#fff;box-shadow:3px 3px 0 var(--ink);position:relative;
+}
+.mic-btn::before{content:"";position:absolute;inset:-8px;border:2px dashed rgba(238,75,43,.55);border-radius:50%;animation:pulse 1.8s ease-in-out infinite}
+.mic-btn .ico{width:26px;height:26px}
+.voice-card h5{margin:2px 0 3px;font-family:var(--font-display);font-size:14px;font-weight:400}
+.voice-card p{margin:0;font-size:8.5px;color:var(--muted)}
+.waveform{display:flex;align-items:center;justify-content:center;gap:3px;height:28px;margin-top:5px}
+.waveform i{width:4px;background:var(--blue);border:1px solid var(--ink);animation:wave 1.1s ease-in-out infinite}
+.waveform i:nth-child(1){height:9px;animation-delay:-.2s}
+.waveform i:nth-child(2){height:15px;animation-delay:-.4s}
+.waveform i:nth-child(3){height:22px;animation-delay:-.1s}
+.waveform i:nth-child(4){height:12px;animation-delay:-.5s}
+.waveform i:nth-child(5){height:18px;animation-delay:-.3s}
+.waveform i:nth-child(6){height:8px;animation-delay:-.6s}
+@keyframes wave{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+.transcript{margin-top:7px;padding:8px 9px;border:2px solid var(--ink);background:var(--paper-3);text-align:left;font-family:var(--font-body);font-size:9.5px;line-height:1.65}
+.score-row{display:flex;gap:5px;margin-top:7px}
+.score-pill{flex:1;padding:4px 5px;border:2px solid var(--ink);background:var(--green-soft);text-align:center;font-size:8px}
+.score-pill b{display:block;font-family:var(--font-num);font-size:13px;color:var(--green)}
+
+.vip-hero{position:relative;padding:14px 13px;border:3px solid var(--ink);background:var(--ink);color:var(--paper-2);box-shadow:4px 4px 0 var(--yellow);overflow:hidden}
+.vip-hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle, rgba(245,197,66,.2) 1px, transparent 1.2px);background-size:7px 7px;opacity:.6}
+.vip-hero__top{position:relative;display:flex;align-items:center;gap:7px}
+.vip-crown{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--yellow);border-radius:50%;background:var(--yellow);color:var(--ink)}
+.vip-crown .ico{width:18px;height:18px}
+.vip-hero h4{position:relative;margin:8px 0 3px;font-family:var(--font-display);font-size:19px;font-weight:400;color:var(--yellow)}
+.vip-hero p{position:relative;margin:0;font-size:8.5px;line-height:1.6;color:rgba(255,248,230,.72)}
+.vip-benefits{display:grid;gap:5px;margin-top:9px}
+.vip-benefit{display:flex;align-items:center;gap:6px;padding:5px 7px;border:2px solid var(--ink);background:var(--paper-2);font-size:9px}
+.vip-benefit .ico{width:13px;height:13px;color:var(--green)}
+.vip-benefit span{margin-left:auto;font-size:7.5px;color:var(--muted)}
+.vip-plans{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.vip-plan{position:relative;padding:9px 8px;border:2px solid var(--ink);background:var(--paper-2);text-align:center;box-shadow:2px 2px 0 var(--ink)}
+.vip-plan--hot{background:var(--yellow-soft);box-shadow:3px 3px 0 var(--red)}
+.vip-plan .tag{position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-2deg);padding:0 5px;border:1.5px solid var(--ink);background:var(--red);color:#fff;font-size:6.5px;font-weight:800;white-space:nowrap}
+.vip-plan b{display:block;font-family:var(--font-display);font-size:12px;font-weight:400}
+.vip-plan strong{display:block;font-family:var(--font-num);font-size:20px;color:var(--red);line-height:1.1}
+.vip-plan span{display:block;font-size:7px;color:var(--muted)}
+
+.credit-balance{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px;border:3px solid var(--ink);background:var(--yellow-soft);box-shadow:3px 3px 0 var(--ink)}
+.credit-balance b{display:block;font-family:var(--font-display);font-size:14px;font-weight:400}
+.credit-balance span{display:block;font-size:8px;color:var(--muted)}
+.credit-balance strong{font-family:var(--font-num);font-size:26px;color:var(--red)}
+.credit-packs{display:grid;gap:6px;margin-top:9px}
+.credit-pack{display:flex;align-items:center;gap:8px;padding:8px 9px;border:2px solid var(--ink);background:var(--paper-2);box-shadow:2px 2px 0 var(--ink)}
+.credit-pack__num{width:43px;height:43px;flex:0 0 auto;display:grid;place-items:center;border:2px solid var(--ink);background:var(--paper-3);font-family:var(--font-num);font-size:17px;color:var(--red)}
+.credit-pack__body{flex:1;min-width:0}
+.credit-pack__body b{display:block;font-family:var(--font-display);font-size:12px;font-weight:400}
+.credit-pack__body span{display:block;font-size:7.5px;color:var(--muted)}
+.credit-pack .buy{padding:5px 8px;border:2px solid var(--ink);background:var(--yellow);font-family:var(--font-num);font-size:11px;box-shadow:1px 1px 0 var(--ink);white-space:nowrap}
+
+.invite-reward-hero{padding:12px 13px;border:3px solid var(--ink);background:var(--paper-2);box-shadow:4px 4px 0 var(--yellow)}
+.invite-reward-hero h4{margin:0 0 3px;font-family:var(--font-display);font-size:19px;font-weight:400;line-height:1.3}
+.invite-reward-hero h4 em{font-style:normal;color:var(--red)}
+.invite-reward-hero p{margin:0;font-size:9px;line-height:1.65;color:#51483B}
+.invite-poster{position:relative;margin:9px auto 0;width:86%;padding:11px;border:3px solid var(--ink);background:var(--paper-3);box-shadow:5px 5px 0 var(--red);transform:rotate(-1.2deg);overflow:hidden}
+.invite-poster::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle, rgba(25,21,16,.12) 1px, transparent 1.2px);background-size:7px 7px;opacity:.5}
+.invite-poster h5{position:relative;margin:0 0 4px;font-family:var(--font-display);font-size:16px;font-weight:400;line-height:1.3}
+.invite-poster p{position:relative;margin:0 0 7px;font-size:8.5px;line-height:1.55;color:var(--muted)}
+.invite-poster__bottom{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:7px}
+.invite-poster__bottom .qr{width:46px;height:46px;border:2px solid var(--ink);background:#fff;padding:2px}
+.invite-poster__bottom span{font-size:7.5px;line-height:1.5;color:var(--muted)}
+.invite-progress{margin-top:9px;padding:8px 9px;border:2px solid var(--ink);background:var(--paper-2);box-shadow:2px 2px 0 var(--ink)}
+.invite-progress__head{display:flex;justify-content:space-between;gap:6px;font-size:8.5px}
+.invite-progress__head b{font-family:var(--font-display);font-size:11px;font-weight:400}
+.invite-progress .track{height:9px;border:2px solid var(--ink);background:var(--paper-3);margin-top:4px}
+.invite-progress .track i{display:block;height:100%;width:40%;background:var(--yellow);border-right:2px solid var(--ink)}
+
+.b2b-card{position:relative;padding:16px 14px;border:3px solid var(--ink);background:var(--ink);color:var(--paper-2);box-shadow:5px 5px 0 var(--yellow);overflow:hidden}
+.b2b-card::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle, rgba(245,197,66,.18) 1px, transparent 1.2px);background-size:7px 7px;opacity:.55}
+.b2b-card h4{position:relative;margin:0 0 5px;font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--yellow);line-height:1.3}
+.b2b-card p{position:relative;margin:0 0 9px;font-size:9px;line-height:1.65;color:rgba(255,248,230,.72)}
+.b2b-features{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px}
+.b2b-feature{padding:5px 6px;border:1.5px solid rgba(255,248,230,.5);font-size:8px;line-height:1.45}
+.b2b-card .btn{position:relative;font-size:11px;padding:8px 10px}
+
+.priority-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.priority-card{border:2px solid var(--ink);background:var(--paper-2);box-shadow:3px 3px 0 var(--ink);padding:16px}
+.priority-card .label{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border:2px solid var(--ink);font-family:var(--font-num);font-size:11px;letter-spacing:.08em;margin-bottom:8px}
+.priority-card h3{margin:0 0 6px;font-family:var(--font-display);font-size:19px;font-weight:400}
+.priority-card p{margin:0;font-size:11.5px;line-height:1.7;color:#51483B}
+.priority-card:nth-child(1) .label{background:var(--red);color:#fff}
+.priority-card:nth-child(2) .label{background:var(--yellow)}
+.priority-card:nth-child(3) .label{background:var(--ink);color:var(--paper-2)}
+.priority-card:nth-child(4) .label{background:var(--paper-3)}
+
+.decision-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.decision{border:3px solid var(--ink);background:var(--paper-2);box-shadow:4px 4px 0 var(--ink);padding:18px 19px}
+.decision .q-no{font-family:var(--font-num);font-size:16px;color:var(--red);letter-spacing:.1em}
+.decision h3{margin:4px 0 8px;font-family:var(--font-display);font-size:22px;font-weight:400;line-height:1.3}
+.decision p{margin:0 0 9px;font-size:12.5px;line-height:1.7;color:#51483B}
+.decision .recommend{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border:2px solid var(--ink);background:var(--yellow);font-size:10.5px;font-weight:800}
+.footer{border-top:4px solid var(--ink);padding:32px 0 42px;background:var(--ink);color:var(--paper-2)}
+.footer .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.footer h3{margin:0 0 4px;font-family:var(--font-display);font-size:24px;font-weight:400}
+.footer p{margin:0;font-size:12px;line-height:1.7;color:rgba(255,248,230,.72)}
+.footer .footer-mark{font-family:var(--font-num);font-size:15px;letter-spacing:.14em;color:var(--yellow)}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1120px){
+  .masthead__inner{grid-template-columns:1fr;gap:30px}
+  .masthead__art{justify-content:flex-start}
+  .phone-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .priority-grid{grid-template-columns:repeat(2,1fr)}
+  .decision-grid{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  .wrap{padding:0 20px}
+  .flow-strip{grid-template-columns:repeat(2,1fr)}
+  .flow-step::after{display:none}
+  .masthead h1{font-size:clamp(38px,9vw,62px)}
+}
+@media (max-width:760px){
+  .phone-grid{grid-template-columns:1fr}
+  .priority-grid{grid-template-columns:1fr}
+  .section{padding:44px 0 52px}
+  .masthead__inner{padding-top:36px;padding-bottom:38px}
+  .mini-cover{box-shadow:8px 8px 0 var(--yellow),12px 12px 0 var(--ink)}
+}
+@media (max-width:420px){
+  .wrap{padding:0 14px}
+  .statusbar{padding-left:13px;padding-right:13px}
+  .topbar{padding-left:11px;padding-right:11px}
+  .screen__scroll{padding-left:11px;padding-right:11px}
+  .screen-foot{padding-left:11px;padding-right:11px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mascot" viewBox="0 0 120 132">
+      <ellipse cx="60" cy="119" rx="31" ry="6" fill="rgba(25,21,16,.16)"/>
+      <path d="M60 6C60 6 20 58 20 84c0 20 18 32 40 32s40-12 40-32C100 58 60 6 60 6Z" fill="#191510" stroke="#191510" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M38 74c0-9 6-18 13-25" stroke="#FFF8E6" stroke-width="5" stroke-linecap="round" opacity=".32" fill="none"/>
+      <ellipse cx="45" cy="78" rx="9" ry="10" fill="#FFF8E6"/>
+      <ellipse cx="75" cy="78" rx="9" ry="10" fill="#FFF8E6"/>
+      <circle cx="47" cy="80" r="4" fill="#191510"/>
+      <circle cx="77" cy="80" r="4" fill="#191510"/>
+      <ellipse cx="35" cy="92" rx="6" ry="3" fill="#EE4B2B" opacity=".85"/>
+      <ellipse cx="85" cy="92" rx="6" ry="3" fill="#EE4B2B" opacity=".85"/>
+      <path d="M52 96c4 5 12 5 16 0" stroke="#FFF8E6" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M22 88c-8 2-12 8-12 14" stroke="#191510" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M98 88c8 2 12 8 12 14" stroke="#191510" stroke-width="6" stroke-linecap="round" fill="none"/>
+    </symbol>
+    <symbol id="qr" viewBox="0 0 84 84">
+      <rect width="84" height="84" fill="#fff"/>
+      <g fill="#191510">
+        <rect x="4" y="4" width="22" height="22"/><rect x="8" y="8" width="14" height="14" fill="#fff"/><rect x="12" y="12" width="6" height="6"/>
+        <rect x="58" y="4" width="22" height="22"/><rect x="62" y="8" width="14" height="14" fill="#fff"/><rect x="66" y="12" width="6" height="6"/>
+        <rect x="4" y="58" width="22" height="22"/><rect x="8" y="62" width="14" height="14" fill="#fff"/><rect x="12" y="66" width="6" height="6"/>
+        <rect x="32" y="6" width="6" height="6"/><rect x="44" y="6" width="6" height="6"/><rect x="32" y="18" width="6" height="6"/><rect x="44" y="18" width="6" height="6"/>
+        <rect x="6" y="32" width="6" height="6"/><rect x="18" y="32" width="6" height="6"/><rect x="6" y="44" width="6" height="6"/><rect x="18" y="44" width="6" height="6"/>
+        <rect x="32" y="32" width="6" height="6"/><rect x="44" y="32" width="6" height="6"/><rect x="56" y="32" width="6" height="6"/><rect x="68" y="32" width="6" height="6"/>
+        <rect x="32" y="44" width="6" height="6"/><rect x="44" y="44" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/><rect x="68" y="44" width="6" height="6"/>
+        <rect x="32" y="58" width="6" height="6"/><rect x="44" y="58" width="6" height="6"/><rect x="56" y="58" width="6" height="6"/><rect x="68" y="58" width="6" height="6"/>
+        <rect x="32" y="70" width="6" height="6"/><rect x="44" y="70" width="6" height="6"/><rect x="56" y="70" width="6" height="6"/><rect x="68" y="70" width="6" height="6"/>
+        <rect x="70" y="20" width="6" height="6"/><rect x="20" y="70" width="6" height="6"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <div>
+      <div class="issue-line"><span class="issue-badge">P2 / P3</span> 进阶玩法 · 草图 · 待人工确认</div>
+      <h1>把学习，<br><span class="hl">玩出下一话。</span></h1>
+      <p class="lede">社交 PK、知识领域榜、多模态题目、语音对答，以及 VIP / AI 解析包 / 企业培训的商业化入口。全部沿用已确认的浓漫画视觉与原创小墨；本册是优先级草图，先看方向，不抢 MVP 工期。</p>
+      <div class="hero-tags">
+        <span class="chip">双人 PK</span>
+        <span class="chip">领域排行榜</span>
+        <span class="chip">AI 配图</span>
+        <span class="chip">语音对答</span>
+        <span class="chip">商业化</span>
+      </div>
+    </div>
+    <div class="masthead__art">
+      <div class="mini-cover">
+        <div class="halftone-bg"></div>
+        <span class="mini-vs">VS</span>
+        <div class="mini-cover__bubble">“一个人学，<br>不如一起闯。”</div>
+        <svg class="mascot"><use href="#mascot"/></svg>
+        <div class="mini-cover__title">P2/P3<br>进阶玩法</div>
+        <div class="mini-cover__foot">AI智学 · 11 SCREENS · 草图</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="目录">
+  <div class="wrap toc__inner">
+    <a href="#flow"><span class="n">01</span>玩法路径</a>
+    <a href="#screens"><span class="n">02</span>11 屏草图</a>
+    <a href="#priority"><span class="n">03</span>优先级</a>
+    <a href="#confirm"><span class="n">04</span>待确认</a>
+  </div>
+</nav>
+
+<main>
+<section class="section" id="flow">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 01 章</div>
+      <h2>从“自己学”到“一起玩”</h2>
+      <p class="section-desc">P2/P3 不改变核心学习闭环，而是在它外面加三层：<strong>社交关系、表达方式、商业闭环。</strong>先做能放大的社交，再做能提升体验的多模态，最后才做付费。</p>
+    </div>
+    <div class="flow-strip">
+      <div class="flow-step">
+        <div class="n">01 / CHALLENGE</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v5M8 21h8"/></svg>
+        <h3>约个战</h3>
+        <p>同一话题、同一题库，邀请好友或随机匹配。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">02 / BATTLE</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h4"/><path d="M15 16l2 2 3-4"/></svg>
+        <h3>比一比</h3>
+        <p>比正确率，也比速度；答错不羞辱，给复盘。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">03 / RANK</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/></svg>
+        <h3>上个榜</h3>
+        <p>按知识领域排名，不做全站单一榜单。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">04 / MULTIMODAL</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 15l-5-5L5 20"/></svg>
+        <h3>换个方式</h3>
+        <p>AI 配图、语音对答，让题不止是文字。</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">05 / BUSINESS</div>
+        <svg class="ico flow-icon" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></svg>
+        <h3>跑个通</h3>
+        <p>VIP、解析包、企业培训；最后做，不抢跑。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="screens">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 02 章</div>
+      <h2>11 屏进阶玩法草图</h2>
+      <p class="section-desc">3 列 × 4 行（最后一行 2 屏）。前 5 屏是社交与荣誉，第 6–7 屏是多模态，第 8–10 屏是商业化与裂变，最后一屏是 B 端入口。<strong>P2 先看前 7 屏，P3 再看后 4 屏。</strong></p>
+    </div>
+
+    <div class="phone-grid">
+
+      <!-- 01 PK ENTRY -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">01</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">知识擂台 · 入口</h3><span class="status status--p2">P2 先做</span></div>
+            <p class="phone-note">不比总分，比“同一话谁先通关”。入口只保留两个动作：随机匹配、邀请好友。</p>
+            <p class="phone-interact">同一话题 + 同一题库；答错不扣分，但拖慢速度。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <div class="topbar__title">知识擂台</div>
+              <span class="chip chip--red">P2</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="versus">
+                <div class="vs-side"><div class="avatar">你</div><b>你</b><strong>320</strong></div>
+                <span class="vs-mark">VS</span>
+                <div class="vs-side"><div class="avatar avatar--blue">满</div><b>小满</b><strong>280</strong></div>
+              </div>
+              <div class="mode-row">
+                <div class="mode-card"><b>随机匹配</b><span>找同话题的对手</span></div>
+                <div class="mode-card"><b>邀请好友</b><span>微信发一张战帖</span></div>
+              </div>
+              <div class="battle-stats">
+                <div class="battle-stat"><b>3-1</b><span>本周战绩</span></div>
+                <div class="battle-stat"><b>78%</b><span>对战胜率</span></div>
+                <div class="battle-stat"><b>×4</b><span>最高连击</span></div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:11px">同一话、同一题库，谁先答完谁赢。输的人也能拿到一份复盘，不公开处刑。</div>
+              <button class="btn" style="margin-top:11px">邀请好友 PK <span class="btn-arrow">→</span></button>
+              <button class="btn btn--ghost btn--sm" style="margin-top:7px">随机匹配一位对手</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 PK INVITE -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">02</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">PK 邀请 · 等待好友</h3><span class="status status--p2">P2 先做</span></div>
+            <p class="phone-note">邀请卡 = 一张“战帖”：话题、题量、你的战绩、二维码。等待页只保留分享和复制链接两个动作。</p>
+            <p class="phone-interact">24 小时有效；好友接受后双方收到提醒；可取消。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen screen--halftone">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">等待好友</div>
+              <span class="chip chip--red">P2</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="invite-card">
+                <div class="invite-card__top"><span class="sticker sticker--red">战帖</span><span class="chip" style="font-size:7.5px;padding:1px 5px">5 题 · 约 3 分钟</span></div>
+                <div class="invite-card__title">我在知识擂台<br><em>等你来战。</em></div>
+                <p class="invite-card__sub">话题：天空为什么是蓝的？<br>同一套题，谁先答完谁赢。</p>
+                <div class="invite-card__bottom">
+                  <div><p><b>扫码接受挑战</b>小程序码 · 24 小时有效</p></div>
+                  <svg class="qr"><use href="#qr"/></svg>
+                </div>
+              </div>
+              <div class="waiting"><span class="pulse"></span>等待好友接受… 已等待 00:18</div>
+              <button class="btn" style="margin-top:10px">分享给好友</button>
+              <button class="btn btn--ghost btn--sm" style="margin-top:7px">复制邀请链接</button>
+              <div class="panel" style="margin-top:9px;padding:8px 9px">
+                <b style="font-family:var(--font-display);font-size:11px;font-weight:400">对战规则</b>
+                <div class="tiny" style="margin-top:3px;line-height:1.7">· 同一套 5 题，同时开始<br>· 正确率优先，用时其次<br>· 输家也能拿到复盘</div>
+              </div>
+              <p class="tiny" style="text-align:center;margin-top:9px">好友接受后，双方会同时进入对战。</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 PK BATTLE -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">03</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">PK 对战 · 答题中</h3><span class="status status--p2">P2 先做</span></div>
+            <p class="phone-note">对战页保留单人闯关的全部可读性，只在顶部加一条“双方进度 + 计时”。不做分屏抢答，避免误触和焦虑。</p>
+            <p class="phone-interact">同一题同时开始；15 秒一题；双方答完或超时进入下一题。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar" style="padding-bottom:2px">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">对战中</div>
+              <span class="timer">00:12</span>
+            </div>
+            <div class="battle-head">
+              <div class="battle-side"><span>你</span><b>3 / 5</b><div class="battle-bar"><i style="width:60%"></i></div></div>
+              <span class="tiny">第 4 题</span>
+              <div class="battle-side battle-side--right"><span>小满</span><b>2 / 5</b><div class="battle-bar battle-bar--blue"><i style="width:40%"></i></div></div>
+            </div>
+            <div class="screen__scroll">
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">单选</span><span class="qtag qtag--ghost">光学 · 简单</span></div>
+                <h4>天空为什么是蓝色的？</h4>
+                <div class="opts">
+                  <div class="opt opt--selected"><span class="key">A</span><span>太阳光被大气分子散射</span></div>
+                  <div class="opt"><span class="key">B</span><span>海洋把天空染蓝了</span></div>
+                  <div class="opt"><span class="key">C</span><span>天空本身自带蓝色</span></div>
+                  <div class="opt"><span class="key">D</span><span>云层反射了蓝光</span></div>
+                </div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:10px">小满已经答完第 3 题，别慌，正确率也算分。</div>
+              <div class="battle-mini">
+                <b>答题卡</b>
+                <div class="battle-mini__row"><b>你</b><div class="battle-dots"><span class="battle-dot battle-dot--done">✓</span><span class="battle-dot battle-dot--done">✓</span><span class="battle-dot battle-dot--done">✓</span><span class="battle-dot battle-dot--now">4</span><span class="battle-dot">5</span></div></div>
+                <div class="battle-mini__row"><b>小满</b><div class="battle-dots"><span class="battle-dot battle-dot--done">✓</span><span class="battle-dot battle-dot--done">✓</span><span class="battle-dot battle-dot--fail">×</span><span class="battle-dot battle-dot--now">4</span><span class="battle-dot">5</span></div></div>
+              </div>
+            </div>
+            <div class="screen-foot"><button class="btn">交卷，进入下一题</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 PK RESULT -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">04</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">PK 结算 · 胜负</h3><span class="status status--p2">P2 先做</span></div>
+            <p class="phone-note">胜负用印章和爆炸贴表达，但不羞辱输家。双方都能看到“差在哪”和“再来一局”。</p>
+            <p class="phone-interact">展示比分、正确率、用时；输家看“差一点”+ 复盘；赢家可分享战报。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen screen--halftone">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="screen__scroll">
+              <div style="text-align:center;padding-top:6px">
+                <div class="burst" style="width:132px;height:122px;margin:4px auto 4px;font-size:21px">WIN!<small style="display:block;font-family:var(--font-num);font-size:11px">4 : 3</small></div>
+                <h3 style="margin:0 0 2px;font-family:var(--font-display);font-size:24px;font-weight:400">你赢了，但只赢一题</h3>
+                <p class="tiny" style="margin:0">天空为什么是蓝的 · 5 题 · 用时 1 分 32 秒</p>
+                <div class="battle-stats" style="margin-top:12px">
+                  <div class="battle-stat"><b>80%</b><span>你的正确率</span></div>
+                  <div class="battle-stat"><b>1:32</b><span>你的用时</span></div>
+                  <div class="battle-stat"><b>×3</b><span>最高连击</span></div>
+                </div>
+                <div class="panel panel--yellow" style="margin-top:11px;padding:10px 11px;text-align:left;font-size:9.5px;line-height:1.65">
+                  <b style="font-family:var(--font-display);font-size:12px;font-weight:400">这一局的关键</b><br>
+                  最后一题你选了“散射”，小满选了“反射”。差的不是速度，是那个知识点。
+                </div>
+                <button class="btn" style="margin-top:12px">再来一局</button>
+                <button class="btn btn--ghost btn--sm" style="margin-top:7px">分享战报</button>
+                <div class="panel" style="margin-top:9px;padding:8px 9px;text-align:left">
+                  <b style="font-family:var(--font-display);font-size:11px;font-weight:400">双方数据</b>
+                  <div style="display:flex;justify-content:space-between;gap:8px;font-size:8px;margin-top:3px"><span>正确率</span><span>你 80% · 小满 60%</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;font-size:8px;margin-top:2px"><span>用时</span><span>你 1:32 · 小满 1:48</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;font-size:8px;margin-top:2px"><span>最高连击</span><span>你 ×3 · 小满 ×2</span></div>
+                </div>
+                <p class="tiny" style="margin-top:9px">战报不含排名，只展示这一局的复盘。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05 LEADERBOARD -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">05</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">排行榜 · 知识领域榜</h3><span class="status status--p2">P2 先做</span></div>
+            <p class="phone-note">不做全站单一榜单，按知识领域拆分。默认只看好友榜，用户主动才加入全服榜，降低攀比压力。</p>
+            <p class="phone-interact">周榜重置；可切好友 / 全服；前三名有漫画奖台。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">领域排行榜</div>
+              <span class="chip chip--red">本周</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="filter-row" style="display:flex;gap:4px;margin-top:2px">
+                <span class="chip chip--red">光学</span>
+                <span class="chip">天文</span>
+                <span class="chip">编程</span>
+                <span class="chip">总榜</span>
+              </div>
+              <div class="podium">
+                <div class="podium-side podium-side--2"><div class="p-avatar">满</div><span>小满</span><div class="p-base">920</div></div>
+                <div class="podium-side podium-side--1"><div class="p-avatar" style="background:var(--yellow)">墨</div><span>阿墨</span><div class="p-base">980</div></div>
+                <div class="podium-side podium-side--3"><div class="p-avatar">你</div><span>你</span><div class="p-base">880</div></div>
+              </div>
+              <div class="rank-list">
+                <div class="rank-row"><span class="rank-no">1</span><span class="medal">金</span><span class="rank-avatar">墨</span><span>阿墨</span><span class="score">980</span></div>
+                <div class="rank-row"><span class="rank-no">2</span><span class="medal">银</span><span class="rank-avatar">满</span><span>小满</span><span class="score">920</span></div>
+                <div class="rank-row rank-row--me"><span class="rank-no">3</span><span class="medal">铜</span><span class="rank-avatar">你</span><span>你</span><span class="score">880</span></div>
+                <div class="rank-row"><span class="rank-no">4</span><span class="medal">—</span><span class="rank-avatar">乐</span><span>乐乐</span><span class="score">760</span></div>
+                <div class="rank-row"><span class="rank-no">5</span><span class="medal">—</span><span class="rank-avatar">知</span><span>知知</span><span class="score">710</span></div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:10px">榜单每周一重置；默认只显示好友，想上全服榜需要手动开启。</div>
+              <div class="panel panel--yellow" style="margin-top:9px;padding:8px 9px;font-size:8.5px;line-height:1.6">
+                上榜规则：本周答对题数 × 难度系数；同分看用时；周一 00:00 重置。
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 06 MULTIMODAL -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">06</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">多模态题目 · AI 配图</h3><span class="status status--p2">P2 后做</span></div>
+            <p class="phone-note">只在“图能帮助理解”时生成配图：光路、结构、流程。不用 AI 图做装饰，也不让图片抢过题干。</p>
+            <p class="phone-interact">生图按需触发；可关闭；图加载失败时回退纯文字题。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head" style="display:flex;align-items:center;justify-content:space-between;padding:0 15px 6px">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <span class="chip chip--yellow">第 3 / 5 格</span>
+              <span class="chip chip--red">P2</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">读图</span><span class="qtag qtag--ghost">光学 · 中等</span></div>
+                <h4>图中哪一束光被大气散射得最厉害？</h4>
+                <div class="question-image">
+                  <svg viewBox="0 0 300 152" role="img" aria-label="太阳光进入大气层，蓝光被散射的示意图">
+                    <rect width="300" height="152" fill="#DDECF7"/>
+                    <rect x="0" y="93" width="300" height="59" fill="#F4EBD3"/>
+                    <circle cx="38" cy="38" r="17" fill="#F5C542" stroke="#191510" stroke-width="3"/>
+                    <path d="M55 38 L250 38" stroke="#EE4B2B" stroke-width="3"/>
+                    <path d="M55 46 L245 68" stroke="#3D86C6" stroke-width="3"/>
+                    <path d="M55 30 L245 18" stroke="#F5C542" stroke-width="3"/>
+                    <path d="M58 38 L70 32 M58 38 L70 44 M58 38 L70 50" stroke="#191510" stroke-width="2"/>
+                    <text x="210" y="32" font-family="sans-serif" font-size="9" fill="#191510">红光</text>
+                    <text x="205" y="75" font-family="sans-serif" font-size="9" fill="#3D86C6">蓝光</text>
+                    <text x="12" y="147" font-family="sans-serif" font-size="8" fill="#776C5A">太阳光 →</text>
+                    <text x="232" y="147" font-family="sans-serif" font-size="8" fill="#776C5A">大气层</text>
+                  </svg>
+                  <span class="image-badge">AI 配图</span>
+                </div>
+                <p class="image-note">示意图仅用于说明光路；AI 配图按需生成，可关闭。</p>
+                <div class="opts">
+                  <div class="opt opt--selected"><span class="key">A</span><span>蓝光</span></div>
+                  <div class="opt"><span class="key">B</span><span>红光</span></div>
+                  <div class="opt"><span class="key">C</span><span>黄光</span></div>
+                  <div class="opt"><span class="key">D</span><span>三束光一样</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-foot"><button class="btn">交卷，看讲解</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 07 VOICE -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">07</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">语音对答 · 口语题</h3><span class="status status--p2">P2 后做</span></div>
+            <p class="phone-note">把“解释一个概念”变成口头表达。AI 只评内容和表达，不评口音；识别失败可回退文字输入。</p>
+            <p class="phone-interact">按住说话 / 点击录音；转写可编辑；评分后给示范答案。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="quiz-head" style="display:flex;align-items:center;justify-content:space-between;padding:0 15px 6px">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <span class="chip chip--yellow">口语题 · 1 / 3</span>
+              <span class="chip chip--red">P2</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="qcard">
+                <div class="qcard__meta"><span class="qtag">口头表达</span><span class="qtag qtag--ghost">光学 · 中等</span></div>
+                <h4>用一句话解释“瑞利散射”。</h4>
+                <div class="voice-card">
+                  <div class="mic-btn"><svg class="ico" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg></div>
+                  <h5>正在听…</h5>
+                  <p>点击停止，最长 30 秒</p>
+                  <div class="waveform"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                </div>
+                <div class="transcript"><b style="font-family:var(--font-ui);font-size:8px;color:var(--muted);display:block;margin-bottom:2px">转写</b>太阳光里的蓝光波长短，被空气分子散射得最厉害，所以天空看起来是蓝的。</div>
+                <div class="score-row">
+                  <div class="score-pill"><b>8</b>内容</div>
+                  <div class="score-pill"><b>7</b>表达</div>
+                  <div class="score-pill"><b>8.5</b>关键词</div>
+                </div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:9px">小墨：说对了核心，下次可以补一句“红光波长大，不容易被散射”。</div>
+            </div>
+            <div class="screen-foot">
+              <div style="display:flex;gap:6px">
+                <button class="btn btn--ghost btn--sm" style="flex:1">重录</button>
+                <button class="btn" style="flex:1.4">下一题</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 08 VIP -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">08</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">VIP 会员 · 订阅</h3><span class="status status--p3">P3 商业</span></div>
+            <p class="phone-note">卖“更强的学习能力”，不卖焦虑。权益按使用场景写清楚；不做倒计时逼单、不做伪装免费。</p>
+            <p class="phone-interact">月卡 / 年卡；未登录先引导登录；支付页不在本册展开。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen screen--halftone">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">AI智学 VIP</div>
+              <span class="chip chip--ink">P3</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="vip-hero">
+                <div class="vip-hero__top"><span class="vip-crown"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7l4 4 5-7 5 7 4-4-2 12H5L3 7Z"/></svg></span><span style="font-family:var(--font-num);font-size:12px;color:var(--yellow);letter-spacing:.1em">SUPER LEARNER</span></div>
+                <h4>解锁更深的 AI 学习</h4>
+                <p>更多题、更大文档、更细的复盘；不是“解锁答案”，是“多练几遍”。</p>
+              </div>
+              <div class="vip-benefits">
+                <div class="vip-benefit"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>无限出题<span>不再受每日次数限制</span></div>
+                <div class="vip-benefit"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>高级模型解析<span>更深的讲解与迁移</span></div>
+                <div class="vip-benefit"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>大文档解析<span>200 页以上</span></div>
+                <div class="vip-benefit"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>专属徽章<span>书架上的 VIP 标记</span></div>
+              </div>
+              <div class="vip-plans">
+                <div class="vip-plan"><b>月卡</b><strong>¥19</strong><span>每月自动续费</span></div>
+                <div class="vip-plan vip-plan--hot"><span class="tag">推荐</span><b>年卡</b><strong>¥128</strong><span>约 ¥10.7 / 月</span></div>
+              </div>
+              <button class="btn" style="margin-top:10px">开通 VIP</button>
+              <p class="tiny" style="text-align:center;margin-top:8px">P3 功能，MVP 不出现。价格与权益仅为草图占位。</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 09 CREDITS -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">09</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">AI 解析包 · 按量付费</h3><span class="status status--p3">P3 商业</span></div>
+            <p class="phone-note">给“偶尔要解析大文档”的用户一个轻量付费选项。明码标价，不自动续费，不藏价格。</p>
+            <p class="phone-interact">余额展示；三档套餐；购买前确认消耗规则。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">AI 解析包</div>
+              <span class="chip chip--ink">P3</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="credit-balance">
+                <div><b>当前余额</b><span>可用于大文档 / 视频解析</span></div>
+                <strong>3 次</strong>
+              </div>
+              <div class="credit-packs">
+                <div class="credit-pack"><div class="credit-pack__num">10</div><div class="credit-pack__body"><b>小包 · 10 次</b><span>适合偶尔解析课程资料</span></div><button class="buy">¥6</button></div>
+                <div class="credit-pack"><div class="credit-pack__num" style="background:var(--yellow-soft)">50</div><div class="credit-pack__body"><b>中包 · 50 次</b><span>适合备考 / 读书笔记</span></div><button class="buy">¥25</button></div>
+                <div class="credit-pack"><div class="credit-pack__num" style="background:var(--green-soft)">200</div><div class="credit-pack__body"><b>大包 · 200 次</b><span>适合团队 / 高频使用</span></div><button class="buy">¥88</button></div>
+              </div>
+              <div class="bubble bubble--yellow" style="margin-top:10px">1 次 = 解析 1 份文档或 1 个视频；普通文本出题不消耗解析包。</div>
+              <div class="panel" style="margin-top:9px;padding:8px 9px">
+                <b style="font-family:var(--font-display);font-size:11px;font-weight:400">怎么消耗？</b>
+                <div class="tiny" style="margin-top:3px;line-height:1.7">1 次 = 1 份文档 / 1 个视频；普通文本出题不消耗；解析失败自动返还。</div>
+              </div>
+              <p class="tiny" style="margin-top:9px">P3 功能，MVP 不出现；价格仅为草图占位。</p>
+            </div>
+            <div class="screen-foot"><button class="btn" disabled>选择套餐后购买</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 10 INVITE -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">10</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">邀请好友 · 裂变奖励</h3><span class="status status--p2">P2 后做</span></div>
+            <p class="phone-note">用“送 AI 解析次数”代替现金奖励，既拉新又不伤品牌。只奖励新用户，防止刷单。</p>
+            <p class="phone-interact">分享邀请卡；好友首次完成闯关后双方到账；防刷。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen screen--halftone">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">邀请好友</div>
+              <span class="chip chip--red">P2</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="invite-reward-hero">
+                <h4>邀请 1 位好友，<br><em>双方各得 3 次 AI 解析</em></h4>
+                <p>好友完成第一次闯关后到账；被邀请人也要先学一话，避免空号。</p>
+              </div>
+              <div class="invite-poster">
+                <h5>我把知识印成了漫画，<br>你也来一话？</h5>
+                <p>AI 出题 · 5 分钟闯关 · 即时讲解</p>
+                <div class="invite-poster__bottom">
+                  <span>扫码开始<br>你的第一话</span>
+                  <svg class="qr"><use href="#qr"/></svg>
+                </div>
+              </div>
+              <div class="invite-progress">
+                <div class="invite-progress__head"><b>邀请进度</b><span>已邀请 2 人 · 获得 6 次</span></div>
+                <div class="track"><i></i></div>
+              </div>
+              <button class="btn" style="margin-top:10px">分享邀请卡</button>
+              <p class="tiny" style="text-align:center;margin-top:8px">仅限新用户；同一设备 / 同一微信只计一次。</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 11 B2B -->
+      <article class="phone-card">
+        <div class="phone-meta">
+          <span class="phone-no">11</span>
+          <div>
+            <div class="phone-title-row"><h3 class="phone-title">企业培训 · B 端入口</h3><span class="status status--p3">P3 观察</span></div>
+            <p class="phone-note">B 端是另一条产品线：私有知识库、团队排行榜、管理员后台。本册只画一个入口，不展开后台。</p>
+            <p class="phone-interact">官网 / 企微联系；不在小程序内做复杂 B 端表单。</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="capsule">⋯ ⊙</span></div>
+            <div class="topbar">
+              <button class="icon-btn"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+              <div class="topbar__title">企业培训</div>
+              <span class="chip chip--ink">P3</span>
+            </div>
+            <div class="screen__scroll">
+              <div class="b2b-card">
+                <h4>把公司的资料，<br>变成每个人的闯关题库。</h4>
+                <p>私有知识库 + 团队学习数据 + 管理员后台，适合新人培训、合规考核、产品知识。</p>
+                <div class="b2b-features">
+                  <span class="b2b-feature">私有知识库</span>
+                  <span class="b2b-feature">团队排行榜</span>
+                  <span class="b2b-feature">管理员后台</span>
+                  <span class="b2b-feature">定制题库</span>
+                </div>
+                <button class="btn btn--yellow">联系我们</button>
+              </div>
+              <div class="panel" style="margin-top:11px;padding:9px 10px">
+                <b style="font-family:var(--font-display);font-size:12px;font-weight:400">适合谁？</b>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">
+                  <span class="chip" style="font-size:8px;padding:2px 6px;border-width:1.5px">新人培训</span>
+                  <span class="chip" style="font-size:8px;padding:2px 6px;border-width:1.5px">合规考核</span>
+                  <span class="chip" style="font-size:8px;padding:2px 6px;border-width:1.5px">产品知识</span>
+                  <span class="chip" style="font-size:8px;padding:2px 6px;border-width:1.5px">销售认证</span>
+                </div>
+              </div>
+              <div class="panel panel--yellow" style="margin-top:9px;padding:9px 10px;font-size:9px;line-height:1.7">
+                <b style="font-family:var(--font-display);font-size:12px;font-weight:400">为什么单独做？</b><br>
+                企业考核需要权限、审计、题库版本和成员管理，和 C 端小程序是两套信息架构。建议先验证 C 端，再单独立项。
+              </div>
+              <p class="tiny" style="margin-top:9px">本页仅为方向占位，不进入 P2 开发。</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" id="priority">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 03 章</div>
+      <h2>优先级：先社交，再多模态，最后商业化</h2>
+      <p class="section-desc">P2/P3 最容易犯的错是“功能一起上”。建议按“能不能带来传播 → 能不能提升体验 → 能不能收钱”的顺序推进。</p>
+    </div>
+    <div class="priority-grid">
+      <div class="priority-card">
+        <span class="label">P2 · NOW</span>
+        <h3>双人 PK + 领域榜</h3>
+        <p>传播性最强，研发成本可控。先做异步 PK（好友接受后各自答同一套题），不做实时抢答。</p>
+      </div>
+      <div class="priority-card">
+        <span class="label">P2 · NEXT</span>
+        <h3>AI 配图 + 语音对答</h3>
+        <p>体验差异点，但依赖多模态能力与成本。先做“按需配图”，语音后置。</p>
+      </div>
+      <div class="priority-card">
+        <span class="label">P3 · LATER</span>
+        <h3>VIP + 解析包</h3>
+        <p>等留存和用量跑出来再做。先做权益页与入口，支付链路和定价单独验证。</p>
+      </div>
+      <div class="priority-card">
+        <span class="label">P3 · WATCH</span>
+        <h3>企业培训</h3>
+        <p>另一条产品线。只保留一个“联系我们”入口，不在小程序内展开后台。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="confirm">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">第 04 章</div>
+      <h2>已确认的 4 个方向</h2>
+      <p class="section-desc">以下方向已确认。P2 先做异步 PK + 好友/领域榜，多模态先 AI 配图、语音后置；P3 先画权益页，支付链路单独后置。</p>
+    </div>
+    <div class="decision-grid">
+      <div class="decision">
+        <div class="q-no">Q1 / SOCIAL</div>
+        <h3>对战形式先做哪种？</h3>
+        <p>异步 PK 最轻：好友接受后各自答同一套题；实时 PK 更刺激，但需要房间、同步和断线处理。</p>
+        <span class="recommend">已确认：异步 PK，先验证传播</span>
+      </div>
+      <div class="decision">
+        <div class="q-no">Q2 / RANK</div>
+        <h3>排行榜做到哪一层？</h3>
+        <p>好友榜最轻、领域榜最有产品特色、全服榜最卷。可以组合，但建议默认只显示好友。</p>
+        <span class="recommend">已确认：好友榜 + 领域榜，全服榜后置</span>
+      </div>
+      <div class="decision">
+        <div class="q-no">Q3 / MULTIMODAL</div>
+        <h3>多模态先做哪一项？</h3>
+        <p>AI 配图对理解帮助更直接；语音对答更差异化，但识别、评分和成本都更重。</p>
+        <span class="recommend">已确认：先 AI 配图，语音后置</span>
+      </div>
+      <div class="decision">
+        <div class="q-no">Q4 / BUSINESS</div>
+        <h3>商业化现在画到哪一步？</h3>
+        <p>只保留入口最稳；画到权益页可以验证定价；支付栏和订单流程建议单独一册。</p>
+        <span class="recommend">已确认：先画权益页，支付链路后置</span>
+      </div>
+    </div>
+    <div class="section-note" style="background:var(--yellow-soft)">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></svg>
+      <div><b>共同原则：</b>所有进阶玩法都回到“学习闭环”。PK 要能复盘，排行榜要能回到题目，VIP 要不影响免费用户体验，企业版不混进 C 端导航。</div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <h3>AI智学 · P2/P3 进阶玩法</h3>
+      <p>11 屏草图 · 待人工确认 · 沿用浓漫画 / 原创小墨 / 全年龄泛学习</p>
+    </div>
+    <div class="footer-mark">PLAY · COMPETE · GROW</div>
+  </div>
+</footer>
+
+</body>
+</html>

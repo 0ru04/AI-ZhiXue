@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff9e8">
+  <title>AI智学 · 学习扩展</title>
+  <style>
+    :root {
+      --paper:#fff9e8; --white:#fffef9; --ink:#24242a; --muted:#77746e;
+      --red:#ef4c48; --blue:#315fea; --yellow:#f6ca3d; --mint:#73cbb0;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; color:var(--ink); background-color:#eee8d9;
+      background-image:radial-gradient(#b6ad99 .65px,transparent .65px); background-size:12px 12px;
+      font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+    }
+    a { color:inherit; }
+    button, input { font:inherit; }
+    button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+    .sheet { max-width:1440px; margin:auto; padding:38px clamp(16px,4vw,58px) 64px; }
+    .masthead { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:24px; border-bottom:3px solid var(--ink); padding-bottom:20px; }
+    .masthead > div { min-width:0; }
+    .brandline { display:flex; align-items:center; gap:10px; font-weight:900; }
+    .brandmark { display:grid; place-items:center; width:34px; height:34px; border:2px solid var(--ink); background:var(--yellow); box-shadow:2px 2px 0 var(--ink); transform:rotate(-5deg); font-size:20px; }
+    .eyebrow { margin:18px 0 10px; color:#2448bd; font-size:12px; font-weight:900; letter-spacing:.08em; }
+    h1,h2,h3,h4,p { margin-top:0; }
+    h1 { max-width:740px; margin-bottom:8px; font-size:clamp(30px,4vw,54px); line-height:1.03; letter-spacing:-.06em; }
+    .intro { max-width:650px; margin-bottom:0; color:#5c5952; line-height:1.75; }
+    .nav { display:flex; flex-wrap:wrap; justify-content:end; gap:8px; }
+    .nav a { padding:9px 12px; border:2px solid var(--ink); background:var(--white); text-decoration:none; font-size:12px; font-weight:800; box-shadow:2px 2px 0 var(--ink); }
+    .nav a[aria-current=page] { color:white; background:var(--blue); }
+    .tokens { display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 28px; }
+    .token { display:inline-flex; align-items:center; gap:7px; padding:6px 9px; border:1px solid #c9c1af; background:rgba(255,254,249,.82); font-size:11px; font-weight:700; }
+    .swatch { width:12px; height:12px; border:1px solid var(--ink); border-radius:50%; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:20px; margin:30px 0 16px; }
+    .section-head h2 { margin:0; font-size:24px; letter-spacing:-.04em; }
+    .section-head p { margin:0; color:var(--muted); font-size:13px; }
+    .gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:26px; align-items:start; }
+    .specimen { min-width:0; }
+    .specimen-label { display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin:0 0 10px; }
+    .specimen-label strong { font-size:14px; }
+    .specimen-label span { color:var(--muted); font-size:11px; text-align:right; }
+    .device { width:min(100%,370px); margin:auto; padding:8px; border:2px solid var(--ink); border-radius:30px; background:#29292f; box-shadow:7px 7px 0 rgba(36,36,42,.22); }
+    .screen { display:flex; flex-direction:column; min-height:660px; overflow:hidden; border:1px solid var(--ink); border-radius:21px; background:var(--paper); }
+    .systembar { display:flex; justify-content:space-between; padding:10px 16px 5px; font-size:10px; font-weight:800; }
+    .appbar { display:flex; justify-content:space-between; align-items:center; padding:8px 16px 12px; }
+    .appname { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:900; }
+    .mini-mark { display:grid; place-items:center; width:23px; height:23px; border:1.5px solid var(--ink); background:var(--yellow); transform:rotate(-5deg); font-size:14px; }
+    .app-action { display:grid; place-items:center; width:32px; height:32px; border:1.5px solid var(--ink); border-radius:50%; background:var(--white); font-weight:900; }
+    .body { display:flex; flex:1; flex-direction:column; padding:8px 17px 18px; }
+    .body h3 { margin-bottom:9px; font-size:24px; line-height:1.2; letter-spacing:-.05em; }
+    .body p { line-height:1.55; }
+    .muted { color:var(--muted); }
+    .tiny { font-size:11px; }
+    .kicker { margin-bottom:8px; color:#2448bd; font-size:11px; font-weight:900; }
+    .scribble { display:inline-block; align-self:flex-start; padding:4px 8px; border:1.5px solid var(--ink); background:var(--yellow); transform:rotate(-2deg); font-size:11px; font-weight:900; }
+    .button { display:flex; justify-content:center; align-items:center; gap:8px; width:100%; min-height:46px; border:2px solid var(--ink); border-radius:7px; background:#d63b3b; color:white; box-shadow:3px 3px 0 var(--ink); font-weight:900; cursor:pointer; }
+    .button.blue { background:var(--blue); }
+    .button.yellow { color:var(--ink); background:var(--yellow); }
+    .button.ghost { color:var(--ink); background:transparent; box-shadow:none; }
+    .tile { display:flex; align-items:center; gap:11px; padding:12px; border:1.5px solid var(--ink); background:var(--white); }
+    .tile + .tile { margin-top:9px; }
+    .tile-icon { display:grid; place-items:center; flex:0 0 40px; width:40px; height:40px; border:1.5px solid var(--ink); background:#e4eaff; font-size:17px; font-weight:900; }
+    .tile-icon.yellow { background:#ffedab; }
+    .tile-icon.mint { background:#d9f3e8; }
+    .tile-copy { flex:1; min-width:0; }
+    .tile-copy b { display:block; margin-bottom:3px; font-size:12px; }
+    .tile-copy small { color:var(--muted); font-size:10px; line-height:1.4; }
+    .chevron { font-size:18px; font-weight:900; }
+    .source-tabs { display:flex; gap:6px; margin:13px 0; }
+    .source-tabs span { flex:1; padding:8px 4px; border:1px solid var(--ink); background:var(--white); text-align:center; font-size:10px; font-weight:800; }
+    .source-tabs span:first-child { color:white; background:var(--blue); }
+    .drop-zone { display:grid; place-items:center; min-height:154px; margin:8px 0 12px; padding:18px; border:2px dashed var(--blue); background:#eef1ff; text-align:center; }
+    .upload-icon { display:grid; place-items:center; width:48px; height:48px; margin-bottom:8px; border:1.5px solid var(--ink); border-radius:50%; background:var(--yellow); font-size:23px; font-weight:900; }
+    .file-row { display:flex; align-items:center; gap:9px; padding:9px; border:1px solid #c9c1af; background:var(--white); font-size:10px; }
+    .file-type { display:grid; place-items:center; width:29px; height:34px; border:1px solid var(--ink); background:#ffe2df; color:var(--red); font-size:8px; font-weight:900; }
+    .url-field { padding:12px; border:1.5px solid var(--ink); background:var(--white); color:#666; font-size:11px; }
+    .meter { height:8px; overflow:hidden; border:1px solid var(--ink); border-radius:20px; background:white; }
+    .meter i { display:block; height:100%; background:var(--mint); }
+    .meter-label { display:flex; justify-content:space-between; margin:5px 0 10px; font-size:9px; }
+    .folder-hero { display:flex; justify-content:space-between; align-items:end; padding:14px; border:2px solid var(--ink); background:var(--blue); color:white; }
+    .folder-hero b { display:block; font-size:18px; }
+    .folder-hero small { font-size:10px; }
+    .folder-stack { display:flex; gap:5px; align-items:end; }
+    .folder-stack span { display:block; width:19px; height:26px; border:1px solid var(--ink); background:var(--yellow); transform:rotate(-8deg); }
+    .folder-stack span:nth-child(2) { height:34px; background:var(--mint); transform:rotate(3deg); }
+    .folder-stack span:nth-child(3) { height:22px; background:#ff9b89; transform:rotate(10deg); }
+    .list-head { display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; font-size:12px; font-weight:900; }
+    .list-head small { color:var(--blue); font-size:10px; }
+    .folder { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:10px; border:1.5px solid var(--ink); background:var(--white); }
+    .folder-name { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:800; }
+    .folder-tag { padding:4px 6px; border:1px solid var(--ink); background:#fff0bc; font-size:9px; }
+    .tabs { display:flex; justify-content:space-around; margin-top:auto; padding:10px 5px 0; border-top:1px solid #d7cfbd; font-size:9px; font-weight:800; }
+    .tabs span:first-child { color:var(--blue); }
+    .filter-row { display:flex; gap:6px; margin:11px 0; }
+    .filter-row span { padding:6px 9px; border:1px solid #bdb5a5; border-radius:99px; background:var(--white); font-size:9px; }
+    .filter-row span:first-child { border-color:var(--ink); background:var(--yellow); font-weight:900; }
+    .wrong-card { margin-bottom:9px; padding:11px; border:1.5px solid var(--ink); background:var(--white); }
+    .wrong-card .tag { color:#b82732; font-size:9px; font-weight:900; }
+    .wrong-card b { display:block; margin:5px 0; font-size:12px; line-height:1.45; }
+    .wrong-card p { margin:0; color:var(--muted); font-size:10px; }
+    .review-banner { display:flex; align-items:center; gap:12px; margin:8px 0 14px; padding:13px; border:2px solid var(--ink); background:var(--yellow); }
+    .review-number { display:grid; place-items:center; flex:0 0 52px; width:52px; height:52px; border:2px solid var(--ink); border-radius:50%; background:var(--white); font-size:18px; font-weight:900; }
+    .review-banner b { display:block; font-size:13px; }
+    .review-banner small { font-size:10px; }
+    .review-item { margin:0 0 8px; padding:10px 11px; border-left:4px solid var(--blue); background:var(--white); font-size:11px; line-height:1.5; }
+    .review-item small { display:block; margin-top:3px; color:var(--muted); font-size:9px; }
+    .chart { display:flex; align-items:end; justify-content:space-around; height:147px; margin:12px 0; padding:14px 9px 8px; border:1.5px solid var(--ink); background:var(--white); }
+    .bar-wrap { display:flex; flex-direction:column; align-items:center; justify-content:end; gap:5px; height:100%; font-size:9px; color:var(--muted); }
+    .bar { width:21px; min-height:9px; border:1px solid var(--ink); background:var(--blue); }
+    .bar.yellow { background:var(--yellow); }
+    .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 12px; }
+    .stat { padding:10px; border:1.5px solid var(--ink); background:var(--white); }
+    .stat b { display:block; font-size:20px; }
+    .stat small { color:var(--muted); font-size:9px; }
+    .insight { padding:11px; border:1.5px solid var(--ink); background:#e0f3e9; font-size:10px; line-height:1.55; }
+    .note { max-width:370px; margin:12px auto 0; color:#625e56; font-size:11px; line-height:1.6; }
+    .footer-note { margin-top:36px; padding:15px 18px; border:2px solid var(--ink); background:var(--white); font-size:12px; line-height:1.7; }
+    @media(max-width:980px) { .gallery { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:620px) {
+      .sheet { padding:22px 14px 42px; }
+      .masthead { grid-template-columns:minmax(0,1fr); }
+      .nav { justify-content:start; }
+      .section-head { align-items:start; flex-direction:column; gap:5px; }
+      .gallery { grid-template-columns:1fr; gap:24px; }
+      .screen { min-height:640px; }
+    }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header class="masthead">
+      <div>
+        <div class="brandline"><span class="brandmark" aria-hidden="true">知</span><span>AI智学 · 原型提案</span></div>
+        <p class="eyebrow">P1 / LEARNING GROWTH</p>
+        <h1>学过的知识，<br>还要找得到、记得住。</h1>
+        <p class="intro">扩展能力围绕“带入材料—整理知识—持续复习”展开。它们属于后续阶段，不会挤占 MVP 的轻量答题闭环。</p>
+      </div>
+      <nav class="nav" aria-label="原型分组">
+        <a href="01-core-flow.html">核心闭环</a>
+        <a href="02-learning-growth.html" aria-current="page">学习扩展</a>
+        <a href="03-advanced-play.html">进阶玩法</a>
+      </nav>
+    </header>
+    <div class="tokens" aria-label="视觉色彩">
+      <span class="token"><i class="swatch" style="background:#fff9e8"></i>纸张白</span>
+      <span class="token"><i class="swatch" style="background:#24242a"></i>墨线黑</span>
+      <span class="token"><i class="swatch" style="background:#ef4c48"></i>闯关红</span>
+      <span class="token"><i class="swatch" style="background:#315fea"></i>亮蓝</span>
+      <span class="token"><i class="swatch" style="background:#f6ca3d"></i>奖励黄</span>
+      <span class="token"><i class="swatch" style="background:#73cbb0"></i>正确薄荷</span>
+    </div>
+    <div class="section-head"><h2>学习扩展能力</h2><p>6 个移动端关键页面 · P1 阶段</p></div>
+
+    <section class="gallery" aria-label="学习扩展原型画板">
+      <article class="specimen">
+        <div class="specimen-label"><strong>来源选择 · 带入学习材料</strong><span>01 / 输入扩展</span></div>
+        <div class="device"><div class="screen">
+          <div class="systembar"><span>9:41</span><span>● ▮ ▰</span></div>
+          <div class="appbar"><div class="appname"><span class="mini-mark">知</span>新建学习</div><span class="app-action">×</span></div>
+          <div class="body">
+            <span class="kicker">换一种方式，带知识进来</span><h3>这次想从哪里<br>开始学？</h3>
+            <p class="muted tiny">选一种材料，AI 会帮你提炼重点并编成题目。</p>
+            <div class="tile"><span class="tile-icon yellow">文</span><span class="tile-copy"><b>粘贴一段文字</b><small>适合笔记、摘录或一段概念</small></span><span class="chevron">›</span></div>
+            <div class="tile"><span class="tile-icon">PDF</span><span class="tile-copy"><b>上传学习资料</b><small>PDF、Word 文档</small></span><span class="chevron">›</span></div>
+            <div class="tile"><span class="tile-icon mint">↗</span><span class="tile-copy"><b>粘贴网页或视频链接</b><small>AI 提取页面中的学习内容</small></span><span class="chevron">›</span></div>
+            <div class="status-card" style="margin-top:14px;padding:11px;border:1px dashed #9c9588;background:#fffef9;font-size:10px;line-height:1.5"><b>隐私提示</b><br>上传前确认你有权使用这份资料。</div>
+            <div class="tabs"><span>⌂ 首页</span><span>▤ 学习记录</span><span>◉ 我的</span></div>
+          </div>
+        </div></div>
+        <p class="note"><b>重点：</b>输入方式并列呈现；新增来源能力与 MVP 首页的简洁入口区分开。</p>
+      </article>
+
+      <article class="specimen">
+        <div class="specimen-label"><strong>网页 / 文档 · 内容确认</strong><span>02 / 来源解析</span></div>
+        <div class="device"><div class="screen">
+          <div class="systembar"><span>9:41</span><span>● ▮ ▰</span></div>
+          <div class="appbar"><div class="appname"><span class="mini-mark">知</span>导入资料</div><span class="app-action">···</span></div>
+          <div class="body">
+            <span class="kicker">先确认，再开始闯关</span><h3>材料收到啦。</h3>
+            <div class="source-tabs"><span>网页链接</span><span>文档</span><span>视频</span></div>
+            <div class="url-field">https://example.com/black-hole-guide</div>
+            <div class="file-row" style="margin-top:9px"><span class="file-type">PDF</span><span style="flex:1"><b>黑洞入门指南.pdf</b><br><small class="muted">2.4 MB · 已解析 32 页</small></span><b>✓</b></div>
+            <div class="status-card" style="margin:14px 0;padding:11px;background:#e3f4eb;font-size:11px"><b>找到 8 个关键知识点</b><p class="tiny" style="margin:4px 0 0">已去除目录、页码和重复段落。</p></div>
+            <div class="list-head"><span>本次将学习</span><small>修改范围</small></div>
+            <div class="folder"><span class="folder-name">◎ 黑洞的形成与类型</span><span class="folder-tag">3 题</span></div>
+            <div class="folder"><span class="folder-name">◎ 事件视界与引力</span><span class="folder-tag">2 题</span></div>
+            <div class="folder"><span class="folder-name">◎ 观测到的黑洞</span><span class="folder-tag">2 题</span></div>
+            <div style="margin-top:auto;padding-top:15px"><button class="button blue">按这些知识点出题</button><p class="tiny muted" style="text-align:center;margin:10px 0 0">解析内容仅用于本次学习</p></div>
+          </div>
+        </div></div>
+        <p class="note"><b>重点：</b>显示解析摘要和题目范围，让用户能在生成之前确认材料是否理解正确。</p>
+      </article>
+
+      <article class="specimen">
+        <div class="specimen-label"><strong>私有知识库 · 我的资料夹</strong><span>03 / 知识管理</span></div>
+        <div class="device"><div class="screen">
+          <div class="systembar"><span>9:41</span><span>● ▮ ▰</span></div>
+          <div class="appbar"><div class="appname"><span class="mini-mark">知</span>我的知识库</div><span class="app-action">＋</span></div>
+          <div class="body">
+            <div class="folder-hero"><div><small>我的资料夹</small><b>把知识分好类</b><small>3 个资料夹 · 18 份材料</small></div><div class="folder-stack"><span></span><span></span><span></span></div></div>
+            <div class="list-head"><span>最近使用</span><small>查看全部 ›</small></div>
+            <div class="folder"><span class="folder-name"><span class="tile-icon yellow" style="width:28px;height:28px;flex-basis:28px">物</span>天文入门</span><span class="tiny muted">8 份 ›</span></div>
+            <div class="folder"><span class="folder-name"><span class="tile-icon mint" style="width:28px;height:28px;flex-basis:28px">AI</span>AI 基础概念</span><span class="tiny muted">6 份 ›</span></div>
+            <div class="folder"><span class="folder-name"><span class="tile-icon" style="width:28px;height:28px;flex-basis:28px">语</span>英语词根</span><span class="tiny muted">4 份 ›</span></div>
+            <div class="status-card" style="margin-top:10px;padding:11px;background:#e8edff;font-size:10px;line-height:1.55"><b>私有知识库</b><br>只在你的账号下使用，可基于资料生成专属闯关。</div>
+            <div style="margin-top:auto;padding-top:14px"><button class="button">＋ 新建资料夹</button></div>
+            <div class="tabs"><span>⌂ 首页</span><span>▤ 学习记录</span><span>◉ 我的</span></div>
+          </div>
+        </div></div>
+        <p class="note"><b>重点：</b>把资料组织和“从资料出题”联系起来，避免知识库变成孤立文件柜。</p>
+      </article>
+
+      <article class="specimen">
+        <div class="specimen-label"><strong>错题本 · 找到还没掌握的</strong><span>04 / 复盘沉淀</span></div>
+        <div class="device"><div class="screen">
+          <div class="systembar"><span>9:41</span><span>● ▮ ▰</span></div>
+          <div class="appbar"><div class="appname"><span class="mini-mark">知</span>错题本</div><span class="app-action">⌕</span></div>
+          <div class="body">
+            <span class="kicker">错过的题，换个角度再学会</span><h3>这几题值得<br>再看一眼。</h3>
+            <div class="filter-row"><span>全部 6</span><span>待复习 3</span><span>已掌握 3</span></div>
+            <div class="wrong-card"><span class="tag">天文入门 · 昨天</span><b>事件视界以内的信息为什么无法传出？</b><p>薄弱点：引力与光的关系</p></div>
+            <div class="wrong-card"><span class="tag">AI 基础 · 3 天前</span><b>向量检索和关键词检索有什么不同？</b><p>薄弱点：语义相似度</p></div>
+            <div class="wrong-card"><span class="tag">英语词根 · 5 天前</span><b>“transport” 中的词根表达什么？</b><p>薄弱点：词根 trans-</p></div>
+            <div style="margin-top:auto;padding-top:13px"><button class="button blue">复习这 3 道题</button><button class="button ghost" style="margin-top:9px">按知识点查看</button></div>
+            <div class="tabs"><span>⌂ 首页</span><span>▤ 学习记录</span><span>◉ 我的</span></div>
+          </div>
+        </div></div>
+        <p class="note"><b>重点：</b>错题描述与知识薄弱点一起显示，提供可执行的复习入口。</p>
+      </article>
+
+      <article class="specimen">
+        <div class="specimen-label"><strong>到期复习 · 间隔重温</strong><span>05 / 复习提醒</span></div>
+        <div class="device"><div class="screen">
+          <div class="systembar"><span>9:41</span><span>● ▮ ▰</span></div>
+          <div class="appbar"><div class="appname"><span class="mini-mark">知</span>今日复习</div><span class="app-action">···</span></div>
+          <div class="body">
+            <span class="scribble">旧知识回来打个招呼</span>
+            <h3 style="margin-top:15px">今天有 4 个<br>知识点该重温了。</h3>
+            <div class="review-banner"><div class="review-number">4</div><div><b>复习一小关，巩固旧知识</b><small>预计 2 分钟 · 按遗忘曲线安排</small></div></div>
+            <div class="review-item"><b>事件视界</b> · 天文入门<small>上次学习：1 天前 · 上次答错</small></div>
+            <div class="review-item"><b>语义检索</b> · AI 基础<small>上次学习：3 天前 · 快到复习时间</small></div>
+            <div class="review-item"><b>trans- 词根</b> · 英语词根<small>上次学习：7 天前</small></div>
+            <div class="review-item"><b>RAG 工作流程</b> · AI 基础<small>上次学习：14 天前</small></div>
+            <div class="status-card" style="margin-top:8px;padding:10px;background:#fff0bc;font-size:10px">今天不方便？可以稍后提醒，不会丢失进度。</div>
+            <div style="margin-top:auto;padding-top:12px"><button class="button">开始今日复习</button><button class="button ghost" style="margin-top:7px">稍后提醒我</button></div>
+          </div>
+        </div></div>
+        <p class="note"><b>重点：</b>用复习数量、原因和时长说明提醒价值；不制造惩罚式的连续打卡压力。</p>
+      </article>
+
+      <article class="specimen">
+        <div class="specimen-label"><strong>学习分析 · 看见自己的变化</strong><span>06 / 学习数据</span></div>
+        <div class="device"><div class="screen">
+          <div class="systembar"><span>9:41</span><span>● ▮ ▰</span></div>
+          <div class="appbar"><div class="appname"><span class="mini-mark">知</span>学习分析</div><span class="app-action">···</span></div>
+          <div class="body">
+            <span class="kicker">最近 7 天 · 学习概览</span><h3>一点一点，<br>都有进步。</h3>
+            <div class="stat-grid"><div class="stat"><b>6</b><small>完成闯关</small></div><div class="stat"><b>28</b><small>答对题目</small></div></div>
+            <div class="list-head"><span>每天的学习情况</span><small>本周</small></div>
+            <div class="chart" role="img" aria-label="一周学习分钟数柱状图：周一 12，周二 18，周三 10，周四 26，周五 20，周六 32，周日 16 分钟">
+              <div class="bar-wrap"><i class="bar" style="height:38%"></i>一</div><div class="bar-wrap"><i class="bar yellow" style="height:56%"></i>二</div><div class="bar-wrap"><i class="bar" style="height:31%"></i>三</div><div class="bar-wrap"><i class="bar yellow" style="height:81%"></i>四</div><div class="bar-wrap"><i class="bar" style="height:63%"></i>五</div><div class="bar-wrap"><i class="bar yellow" style="height:100%"></i>六</div><div class="bar-wrap"><i class="bar" style="height:50%"></i>日</div>
+            </div>
+            <div class="insight"><b>发现一个小进步</b><br>本周“AI 基础”答题正确率比上周提高了 15%。事件视界相关题目还可以再复习一次。</div>
+            <div class="list-head"><span>最近学过</span><small>知识点 ›</small></div>
+            <div class="folder"><span class="folder-name">◎ 天文入门</span><span class="tiny muted">掌握 72%</span></div>
+            <div class="folder"><span class="folder-name">◎ AI 基础</span><span class="tiny muted">掌握 86%</span></div>
+          </div>
+        </div></div>
+        <p class="note"><b>重点：</b>图表配合可读的行动建议；掌握度是示例指标，正式口径需和评分规则统一。</p>
+      </article>
+    </section>
+    <aside class="footer-note"><b>阶段说明：</b>本组为 P1 扩展原型。来源解析、RAG 知识库、遗忘曲线计划和分析数据都需要后端能力支撑；示例材料和统计仅用于展示布局，不代表已实现功能。</aside>
+  </main>
+</body>
+</html>
