@@ -1,0 +1,311 @@
+import { useEffect, useRef, useState } from 'react'
+import { Button, Text, Textarea, View } from '@tarojs/components'
+import Taro from '@tarojs/taro'
+import { generateQuiz, type ApiRequest } from '../../services/api'
+import type { Quiz } from '../../types'
+import { createRun, saveRun } from '../../utils/session'
+import './index.scss'
+
+const EXAMPLE_TOPICS = ['RAG 是什么', '光合作用', '黑洞会吞掉地球吗']
+const MORE_EXAMPLES = ['为什么天空是蓝色的？', '什么是区块链？', '蝴蝶如何变成蝴蝶？']
+const PRINT_STEPS = [
+  ['整理学习内容', '正在读取'],
+  ['提炼核心考点', '等待中'],
+  ['印刷闯关题目', '等待中'],
+  ['校对答案讲解', '等待中'],
+]
+
+function Mascot({ className = '' }: { className?: string }) {
+  return (
+    <View className={`mascot ${className}`}>
+      <View className='mascot-point' />
+      <View className='mascot-body' />
+      <View className='mascot-eye mascot-eye-left' />
+      <View className='mascot-eye mascot-eye-right' />
+      <View className='mascot-cheek mascot-cheek-left' />
+      <View className='mascot-cheek mascot-cheek-right' />
+      <View className='mascot-mouth' />
+    </View>
+  )
+}
+
+export default function Index() {
+  const [input, setInput] = useState('')
+  const [mode, setMode] = useState<'idle' | 'loading' | 'error'>('idle')
+  const [loadingStep, setLoadingStep] = useState(0)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [showMoreExamples, setShowMoreExamples] = useState(false)
+  const activeRequest = useRef<ApiRequest<Quiz> | null>(null)
+  const requestSequence = useRef(0)
+
+  useEffect(() => {
+    if (mode !== 'loading') return undefined
+    const timer = setInterval(() => {
+      setLoadingStep((step) => Math.min(step + 1, PRINT_STEPS.length - 1))
+    }, 1800)
+    return () => clearInterval(timer)
+  }, [mode])
+
+  const startGeneration = async () => {
+    const userInput = input.trim()
+    if (!userInput || mode === 'loading') return
+
+    const sequence = requestSequence.current + 1
+    requestSequence.current = sequence
+    setErrorMessage('')
+    setLoadingStep(0)
+    setMode('loading')
+
+    const request = generateQuiz(userInput)
+    activeRequest.current = request
+    let requestFailed = false
+    try {
+      const quiz = await request.promise
+      if (requestSequence.current !== sequence) return
+      saveRun(createRun(quiz))
+      await Taro.navigateTo({ url: '/pages/quiz/index' })
+    } catch (error) {
+      if (requestSequence.current !== sequence) return
+      requestFailed = true
+      setErrorMessage(
+        error instanceof Error ? error.message : '网络抖了一下，请稍后重试',
+      )
+      setMode('error')
+    } finally {
+      if (requestSequence.current === sequence) {
+        activeRequest.current = null
+        if (!requestFailed) setMode('idle')
+      }
+    }
+  }
+
+  const cancelGeneration = () => {
+    requestSequence.current += 1
+    activeRequest.current?.abort()
+    activeRequest.current = null
+    setMode('idle')
+    setLoadingStep(0)
+  }
+
+  const chooseExample = (example: string) => {
+    setInput(example)
+    if (mode === 'error') setMode('idle')
+  }
+
+  const editAfterError = () => {
+    setMode('idle')
+    setErrorMessage('')
+  }
+
+  const examples = showMoreExamples
+    ? [...EXAMPLE_TOPICS, ...MORE_EXAMPLES]
+    : EXAMPLE_TOPICS
+
+  return (
+    <View className='home-page page-shell'>
+      <View className='page-content home-content'>
+        <View className='topbar'>
+          {mode === 'idle' ? (
+            <>
+              <View className='brand'>
+                <View className='brand-mark'>AI</View>
+                <Text>智学</Text>
+              </View>
+              <Text className='chip chip-yellow'>今日一话</Text>
+              <Button
+                className='icon-button home-settings'
+                aria-label='设置'
+                onClick={() =>
+                  Taro.showToast({ title: '先专心闯过这一话吧', icon: 'none' })
+                }
+              >
+                ···
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                className='icon-button'
+                onClick={mode === 'loading' ? cancelGeneration : editAfterError}
+              >
+                ←
+              </Button>
+              <Text className='display-font home-state-title'>
+                {mode === 'loading' ? '正在印刷' : '印刷中断'}
+              </Text>
+              <View className='home-header-spacer' />
+            </>
+          )}
+        </View>
+
+        {mode === 'loading' ? (
+          <View className='print-state panel'>
+            <View className='print-stage'>
+              <View className='print-sheet print-sheet-back' />
+              <View className='print-sheet print-sheet-middle' />
+              <View className='print-sheet print-sheet-front' />
+              <Mascot className='print-mascot' />
+              <Text className='print-caption display-font'>
+                正在把知识压成 5 道题…
+              </Text>
+            </View>
+            <View className='steps-list'>
+              {PRINT_STEPS.map(([label], index) => (
+                <View
+                  key={label}
+                  className={`step-row ${
+                    index < loadingStep
+                      ? 'step-done'
+                      : index === loadingStep
+                        ? 'step-now'
+                        : ''
+                  }`}
+                >
+                  <View className='step-dot'>
+                    {index < loadingStep ? '✓' : index + 1}
+                  </View>
+                  <Text className='step-label'>{label}</Text>
+                  <Text className='step-status'>
+                    {index < loadingStep
+                      ? '已完成'
+                      : index === loadingStep
+                        ? '正在排版'
+                        : '等待中'}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            <View className='skeleton-card'>
+              <View className='skeleton-line' />
+              <View className='skeleton-line' />
+              <View className='skeleton-line' />
+              <View className='skeleton-line' />
+            </View>
+            <View className='bubble bubble-yellow'>
+              小墨正在逐题校对，确保答案和讲解都对得上。
+            </View>
+            <Text className='tiny loading-time'>通常需要几秒钟，别走开。</Text>
+            <Button className='primary-button button-ghost cancel-button' onClick={cancelGeneration}>
+              取消
+            </Button>
+          </View>
+        ) : mode === 'error' ? (
+          <View className='error-state'>
+            <Mascot className='error-mascot' />
+            <Text className='error-badge'>AI-500</Text>
+            <Text className='display-font error-title'>印刷机卡纸了</Text>
+            <Text className='body-font error-subtitle'>
+              网络抖了一下，题目没印出来。你的输入还在，再来一次就好。
+            </Text>
+            <View className='error-input'>
+              <Text className='error-input-label'>你刚才输入的是</Text>
+              <Text className='body-font'>{input}</Text>
+            </View>
+            <Text className='error-code'>
+              {errorMessage || 'NETWORK TIMEOUT'} · 输入已保留
+            </Text>
+            <View className='error-actions'>
+              <Button className='primary-button' onClick={startGeneration}>
+                再印一次 <Text>→</Text>
+              </Button>
+              <Button
+                className='primary-button button-ghost button-small'
+                onClick={editAfterError}
+              >
+                改一下主题
+              </Button>
+            </View>
+            <Text className='tiny error-note'>
+              不会把半成品题目交给你；重试不会丢失这段输入。
+            </Text>
+          </View>
+        ) : (
+          <>
+            <View className='home-hero'>
+              <Text className='hero-episode'>第 001 话</Text>
+              <View className='hero-row'>
+                <View className='hero-copy'>
+                  <Text className='display-font hero-title'>
+                    今天想搞懂
+                    <Text className='hero-highlight'>点什么？</Text>
+                  </Text>
+                  <Text className='body-font hero-subtitle'>
+                    说一句话，我把它印成一话闯关漫画。
+                  </Text>
+                </View>
+                <Mascot className='hero-mascot' />
+              </View>
+            </View>
+
+            <View className='input-card'>
+              <Textarea
+                className='topic-input body-font'
+                maxlength={500}
+                value={input}
+                placeholder='例如：为什么天空是蓝色的？'
+                placeholderClass='topic-placeholder'
+                onInput={(event) => setInput(event.detail.value)}
+              />
+              <View className='input-foot dashed-divider'>
+                <Text>支持一句话 / 一段文本</Text>
+                <Text>{input.length} / 500</Text>
+              </View>
+            </View>
+
+            <View className='examples-row'>
+              {examples.map((example) => (
+                <Button
+                  key={example}
+                  className={`example-chip ${input === example ? 'example-active' : ''}`}
+                  onClick={() => chooseExample(example)}
+                >
+                  {example}
+                </Button>
+              ))}
+              <Button
+                className='example-chip example-refresh'
+                onClick={() => setShowMoreExamples((shown) => !shown)}
+              >
+                + {showMoreExamples ? '收起' : '换一批'}
+              </Button>
+            </View>
+
+            <View className='settings-row'>
+              <View className='setting-chip'><Text className='setting-key'>题量</Text>5 题</View>
+              <View className='setting-chip'><Text className='setting-key'>难度</Text>混合</View>
+              <View className='setting-chip setting-types'>
+                <Text className='setting-key'>题型</Text>单选 / 多选 / 判断
+              </View>
+            </View>
+
+            <Button
+              className={`primary-button home-cta home-submit ${
+                input.trim() ? 'home-submit-ready' : ''
+              }`}
+              disabled={!input.trim()}
+              onClick={startGeneration}
+            >
+              开始印刷题目 <Text className='button-arrow'>→</Text>
+            </Button>
+
+            <View className='home-footnote'>
+              <Text className='footnote-check'>✓</Text>
+              <Text>MVP 无需登录；生成记录只保存在本机。</Text>
+            </View>
+
+            <View className='daily-card'>
+              <View className='daily-head'>
+                <Mascot className='daily-mascot' />
+                <Text className='display-font'>小墨的今日一句</Text>
+              </View>
+              <Text className='body-font daily-quote'>
+                “蓝光不是被天空染上的，是被空气弹出来的。”
+              </Text>
+              <Text className='daily-topic'>今日知识 · 瑞利散射</Text>
+            </View>
+          </>
+        )}
+      </View>
+    </View>
+  )
+}

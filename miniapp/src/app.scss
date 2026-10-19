@@ -1,0 +1,333 @@
+$paper: #F4EBD3;
+$paper-light: #FFF8E6;
+$paper-white: #FFFDF5;
+$ink: #191510;
+$red: #EE4B2B;
+$yellow: #F5C542;
+$yellow-soft: #FBE08A;
+$blue: #3D86C6;
+$green: #2F9E62;
+$green-soft: #DFF1E6;
+$red-soft: #FBE1DB;
+$muted: #776C5A;
+
+page,
+view,
+text,
+image,
+button,
+input,
+textarea,
+scroll-view,
+swiper,
+swiper-item,
+navigator,
+label,
+form,
+picker,
+canvas,
+video,
+map {
+  box-sizing: border-box;
+}
+
+page {
+  min-height: 100%;
+  color: $ink;
+  background-color: $paper;
+  background-image:
+    radial-gradient(circle at 12% 6%, rgba(245, 197, 66, .22), transparent 26%),
+    radial-gradient(circle at 88% 14%, rgba(61, 134, 198, .11), transparent 28%),
+    radial-gradient(circle, rgba(25, 21, 16, .085) 1rpx, transparent 1.5rpx);
+  background-size: auto, auto, 8rpx 8rpx;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  line-height: inherit;
+}
+
+button::after {
+  border: 0;
+}
+
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 96rpx;
+}
+
+.page-content {
+  flex: 1;
+  padding: 18rpx 30rpx 34rpx;
+}
+
+.topbar {
+  min-height: 82rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-family: "YouYuan", "Microsoft YaHei", sans-serif;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.brand-mark {
+  width: 52rpx;
+  height: 52rpx;
+  display: grid;
+  place-items: center;
+  border: 4rpx solid $ink;
+  background: $red;
+  color: $paper-light;
+  font-family: Impact, sans-serif;
+  font-size: 25rpx;
+  box-shadow: 4rpx 4rpx 0 $ink;
+  transform: rotate(-4deg);
+}
+
+.icon-button {
+  width: 58rpx;
+  height: 58rpx;
+  display: grid;
+  place-items: center;
+  border: 4rpx solid $ink;
+  border-radius: 50%;
+  background: $paper-light;
+  box-shadow: 4rpx 4rpx 0 $ink;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 5rpx 15rpx;
+  border: 3rpx solid $ink;
+  border-radius: 999rpx;
+  background: $paper-light;
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.chip-yellow {
+  background: $yellow;
+}
+
+.chip-red {
+  background: $red;
+  color: #fff;
+}
+
+.chip-green {
+  background: $green;
+  color: #fff;
+}
+
+.chip-blue {
+  background: $blue;
+  color: #fff;
+}
+
+.panel {
+  padding: 24rpx;
+  border: 4rpx solid $ink;
+  background: $paper-light;
+  box-shadow: 7rpx 7rpx 0 $ink;
+}
+
+.panel-yellow {
+  background: $yellow-soft;
+}
+
+.panel-green {
+  background: $green-soft;
+}
+
+.panel-red {
+  background: $red-soft;
+}
+
+.display-font {
+  font-family: "YouYuan", "Microsoft YaHei", sans-serif;
+  font-weight: 800;
+}
+
+.body-font {
+  font-family: "KaiTi", "楷体", "Microsoft YaHei", serif;
+}
+
+.muted {
+  color: $muted;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 94rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  padding: 0 26rpx;
+  border: 4rpx solid $ink;
+  background: $red;
+  color: #fff;
+  box-shadow: 7rpx 7rpx 0 $ink;
+  font-size: 30rpx;
+  font-weight: 900;
+  text-align: center;
+}
+
+.primary-button:active,
+.secondary-button:active {
+  box-shadow: 3rpx 3rpx 0 $ink;
+  transform: translate(4rpx, 4rpx);
+}
+
+.primary-button[disabled] {
+  opacity: .48;
+  box-shadow: 3rpx 3rpx 0 $ink;
+}
+
+.button-yellow {
+  background: $yellow;
+  color: $ink;
+}
+
+.button-ghost {
+  background: transparent;
+  color: $ink;
+  box-shadow: none;
+}
+
+.button-small {
+  min-height: 72rpx;
+  font-size: 25rpx;
+}
+
+.mascot {
+  position: relative;
+  width: 138rpx;
+  height: 145rpx;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.mascot-body {
+  position: absolute;
+  left: 17%;
+  top: 12%;
+  width: 66%;
+  height: 76%;
+  border-radius: 48% 48% 46% 46%;
+  background: $ink;
+  box-shadow: 6rpx 6rpx 0 rgba(25, 21, 16, .15);
+}
+
+.mascot-point {
+  position: absolute;
+  z-index: 1;
+  left: 38%;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-right: 17rpx solid transparent;
+  border-bottom: 41rpx solid $ink;
+  border-left: 17rpx solid transparent;
+}
+
+.mascot-eye {
+  position: absolute;
+  z-index: 2;
+  top: 46%;
+  width: 13rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: $paper-light;
+}
+
+.mascot-eye-left {
+  left: 35%;
+}
+
+.mascot-eye-right {
+  right: 35%;
+}
+
+.mascot-cheek {
+  position: absolute;
+  z-index: 2;
+  top: 62%;
+  width: 11rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: $red;
+}
+
+.mascot-cheek-left {
+  left: 26%;
+}
+
+.mascot-cheek-right {
+  right: 26%;
+}
+
+.mascot-mouth {
+  position: absolute;
+  z-index: 2;
+  left: 44%;
+  top: 64%;
+  width: 12%;
+  height: 9rpx;
+  border-bottom: 4rpx solid $paper-light;
+  border-radius: 0 0 50% 50%;
+}
+
+.dashed-divider {
+  border-top: 3rpx dashed rgba(25, 21, 16, .3);
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  color: $red;
+  font-family: Impact, sans-serif;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+}
+
+.section-label::after {
+  height: 3rpx;
+  flex: 1;
+  content: "";
+  background: repeating-linear-gradient(
+    90deg,
+    $ink 0 8rpx,
+    transparent 8rpx 14rpx
+  );
+  opacity: .35;
+}
+
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
