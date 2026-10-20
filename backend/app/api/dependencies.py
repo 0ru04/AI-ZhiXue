@@ -1,6 +1,13 @@
+from fastapi import Request
+
 from app.core.config import get_settings
+from app.core.config import Settings
 from app.services.quiz_service import QuizService
 from app.services.report_service import ReportService
+
+
+def get_request_settings(request: Request) -> Settings:
+    return request.app.state.settings
 
 
 def get_quiz_service() -> QuizService:

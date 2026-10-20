@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI智学 · 用户系统补充原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #F4EBD3;
+      --paper-2: #FFF8E6;
+      --ink: #191510;
+      --red: #EE4B2B;
+      --yellow: #F5C542;
+      --yellow-soft: #FBE08A;
+      --blue: #3D86C6;
+      --green: #2F9E62;
+      --green-soft: #DFF1E6;
+      --red-soft: #FBE1DB;
+      --muted: #776C5A;
+      --display: "ZCOOL KuaiLe", "YouYuan", "Microsoft YaHei", sans-serif;
+      --body: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--body);
+      line-height: 1.65;
+      background:
+        radial-gradient(circle, rgba(25,21,16,.08) 1px, transparent 1.3px) 0 0 / 8px 8px,
+        radial-gradient(circle at 12% 5%, rgba(245,197,66,.2), transparent 27%),
+        var(--paper);
+    }
+    button { color: inherit; font: inherit; }
+    .wrap { width: min(1220px, calc(100% - 36px)); margin: 0 auto; }
+    .masthead { padding: 38px 0 30px; border-bottom: 4px solid var(--ink); }
+    .eyebrow { font: 14px "Bangers", Impact, sans-serif; letter-spacing: .12em; color: var(--red); }
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h1, h2, h3, h4 { font-family: var(--display); font-weight: 400; }
+    h1 { margin: 8px 0; font-size: clamp(34px, 6vw, 58px); line-height: 1.12; }
+    .masthead p { max-width: 760px; margin: 0; color: #51483B; }
+    .scope-note {
+      margin-top: 18px; padding: 12px 15px; border: 2px dashed var(--ink);
+      background: var(--yellow-soft); font-size: 13px;
+    }
+    .toc {
+      position: sticky; top: 0; z-index: 5; display: flex; gap: 8px;
+      overflow-x: auto; padding: 10px max(18px, calc((100vw - 1220px) / 2));
+      border-bottom: 3px solid var(--ink); background: rgba(244,235,211,.96);
+    }
+    .toc a {
+      flex: 0 0 auto; padding: 5px 10px; border: 2px solid var(--ink);
+      background: var(--paper-2); color: inherit; font-size: 12px;
+      font-weight: 800; text-decoration: none;
+    }
+    .chapter { padding: 34px 0 42px; border-bottom: 2px solid rgba(25,21,16,.22); }
+    .chapter h2 { margin: 4px 0 8px; font-size: 32px; }
+    .chapter-intro { max-width: 790px; margin-bottom: 24px; color: #51483B; }
+    .screen-grid { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 24px; align-items: start; }
+    .screen-card { min-width: 0; }
+    .screen-meta { min-height: 78px; margin-bottom: 10px; }
+    .screen-number { color: var(--red); font: 25px "Bangers", Impact, sans-serif; }
+    .screen-meta h3 { display: inline; margin: 0 0 0 7px; font-size: 19px; }
+    .screen-meta p { margin: 5px 0 0; color: #5A5145; font-size: 11px; line-height: 1.55; }
+    .phone {
+      position: relative; width: 100%; aspect-ratio: 375 / 812; overflow: hidden;
+      border: 4px solid var(--ink); border-radius: 28px; background: var(--paper);
+      box-shadow: 8px 8px 0 var(--ink);
+    }
+    .phone::before {
+      position: absolute; z-index: 3; top: 7px; left: 50%; width: 70px; height: 5px;
+      border-radius: 8px; background: var(--ink); content: ""; transform: translateX(-50%);
+    }
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+    .statusbar {
+      display: flex; justify-content: space-between; padding: 12px 14px 3px;
+      font-size: 9px; font-weight: 800;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 7px;
+      min-height: 45px; padding: 4px 13px 8px;
+    }
+    .brand { display: flex; align-items: center; gap: 6px; font: 17px var(--display); }
+    .brand-mark {
+      display: grid; width: 28px; height: 28px; place-items: center;
+      border: 2px solid var(--ink); background: var(--red); color: white;
+      box-shadow: 2px 2px 0 var(--ink); font: 13px "Bangers", Impact, sans-serif;
+      transform: rotate(-4deg);
+    }
+    .top-title { font: 18px var(--display); }
+    .icon-button {
+      display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center;
+      border: 2px solid var(--ink); border-radius: 50%; background: var(--paper-2);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+    .scroll { min-height: 0; flex: 1; overflow: hidden; padding: 0 13px 14px; }
+    .card {
+      border: 2px solid var(--ink); background: var(--paper-2);
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+    .account-card {
+      display: flex; align-items: center; gap: 10px; padding: 10px;
+      background: var(--yellow-soft); transform: rotate(-.4deg);
+    }
+    .avatar {
+      display: grid; width: 48px; height: 48px; flex: 0 0 auto; place-items: center;
+      overflow: hidden; border: 3px solid var(--ink); border-radius: 50%;
+      background: var(--red); color: white; font: 22px var(--display);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .account-copy { min-width: 0; flex: 1; }
+    .account-copy strong { display: block; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .account-copy span { color: #51483B; font-size: 10px; }
+    .edit-link { padding: 4px 6px; border: 1.5px solid var(--ink); background: var(--paper-2); font-size: 9px; }
+    .hero { margin: 13px 0 8px; font: 22px/1.25 var(--display); }
+    .hero small { display: block; margin-top: 4px; color: var(--muted); font: 10px/1.5 var(--body); }
+    .input-card { min-height: 89px; padding: 10px; border: 2px solid var(--ink); background: var(--paper-2); box-shadow: 3px 3px 0 var(--ink); }
+    .input-card span { color: #9A8E79; font: 11px var(--body); }
+    .input-foot { margin-top: 26px; padding-top: 5px; border-top: 1px dashed #988e7c; color: var(--muted); font-size: 8px; }
+    .primary {
+      width: 100%; margin-top: 10px; padding: 8px; border: 2px solid var(--ink);
+      background: var(--red); color: white; box-shadow: 3px 3px 0 var(--ink);
+      font-weight: 800; font-size: 11px;
+    }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin: 13px 0 6px; }
+    .section-head h4 { margin: 0; font-size: 14px; }
+    .section-head span { color: var(--muted); font-size: 9px; }
+    .recent-item {
+      display: flex; align-items: center; gap: 7px; margin-top: 6px;
+      padding: 7px 8px; border: 1.5px solid var(--ink); background: var(--paper-2);
+    }
+    .recent-badge {
+      display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center;
+      border: 1.5px solid var(--ink); background: var(--green-soft); font: 11px "Bangers", Impact, sans-serif;
+    }
+    .recent-copy { min-width: 0; flex: 1; }
+    .recent-copy b { display: block; overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+    .recent-copy span { color: var(--muted); font-size: 8px; }
+    .percent { color: var(--red); font: 13px "Bangers", Impact, sans-serif; }
+    .footnote { margin: 8px 2px 0; color: var(--muted); font-size: 8px; }
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 9px;
+    }
+    .stat {
+      padding: 8px 3px; border: 2px solid var(--ink); background: var(--paper-2);
+      box-shadow: 2px 2px 0 var(--ink); text-align: center;
+    }
+    .stat b { display: block; color: var(--red); font: 20px "Bangers", Impact, sans-serif; line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: 8px; }
+    .xp-strip {
+      display: flex; align-items: center; justify-content: space-between; margin-top: 8px;
+      padding: 8px 10px; border: 2px solid var(--ink); background: var(--yellow);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+    .xp-strip strong { font: 17px "Bangers", Impact, sans-serif; }
+    .xp-strip span { font-size: 9px; }
+    .history-list { display: grid; gap: 7px; margin-top: 7px; }
+    .history-item { padding: 8px; border: 2px solid var(--ink); background: var(--paper-2); box-shadow: 2px 2px 0 var(--ink); }
+    .history-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 5px; }
+    .history-title b { font-size: 10px; }
+    .history-title strong { color: var(--red); font: 14px "Bangers", Impact, sans-serif; white-space: nowrap; }
+    .history-meta { display: flex; justify-content: space-between; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .history-open { margin-top: 5px; color: var(--blue); font-size: 8px; font-weight: 800; }
+    .empty {
+      margin-top: 12px; padding: 16px 10px; border: 2px dashed var(--ink);
+      background: rgba(255,248,230,.72); text-align: center;
+    }
+    .empty-mascot { margin-bottom: 5px; color: var(--red); font: 26px var(--display); }
+    .empty b { display: block; font: 15px var(--display); }
+    .empty p { margin: 4px 0 9px; color: var(--muted); font-size: 9px; }
+    .empty .primary { margin: 0; }
+    .form-card { margin-top: 12px; padding: 11px; }
+    .form-card h4 { margin-bottom: 8px; font-size: 17px; }
+    .field { margin-top: 10px; }
+    .field label { display: block; margin-bottom: 4px; font-size: 9px; font-weight: 800; }
+    .field input {
+      width: 100%; padding: 8px; border: 2px solid var(--ink); border-radius: 0;
+      background: white; color: var(--ink); font: 10px var(--body);
+    }
+    .helper { margin: 4px 0 0; color: var(--muted); font-size: 8px; }
+    .actions { display: flex; gap: 7px; margin-top: 12px; }
+    .actions button { flex: 1; margin: 0; }
+    .secondary { border: 2px solid var(--ink); background: var(--paper-2); color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+    .accuracy {
+      display: flex; align-items: center; justify-content: center; width: 100px; height: 100px;
+      margin: 13px auto 8px; border: 7px solid var(--green); border-radius: 50%;
+      background: var(--paper-2); box-shadow: 3px 3px 0 var(--ink); text-align: center;
+    }
+    .accuracy b { display: block; color: var(--red); font: 28px "Bangers", Impact, sans-serif; line-height: 1; }
+    .accuracy span { font-size: 8px; }
+    .report-title { margin: 0 0 3px; text-align: center; font-size: 16px; }
+    .report-sub { margin: 0; color: var(--muted); text-align: center; font-size: 8px; }
+    .report-block { margin-top: 9px; padding: 8px; }
+    .report-block h4 { margin: 0 0 4px; font-size: 12px; }
+    .report-block p, .report-block li { font-size: 8px; line-height: 1.55; }
+    .report-block ul { margin: 0; padding-left: 15px; }
+    .answer-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-top: 1px dashed rgba(25,21,16,.28); font-size: 8px; }
+    .answer-row:first-of-type { border-top: 0; }
+    .answer-num { color: var(--red); font: 10px "Bangers", Impact, sans-serif; }
+    .answer-tag { margin-left: auto; padding: 1px 4px; border: 1px solid var(--ink); background: var(--green-soft); }
+    .answer-tag--wrong { background: var(--red-soft); }
+    .gate {
+      margin-top: 12px; padding: 11px; border: 2px solid var(--ink);
+      background: var(--red-soft); box-shadow: 3px 3px 0 var(--ink);
+    }
+    .gate strong { font: 15px var(--display); }
+    .gate p { margin: 4px 0 0; color: #51483B; font-size: 9px; }
+    .state-notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
+    .state-note { padding: 13px; border: 2px solid var(--ink); background: var(--paper-2); box-shadow: 3px 3px 0 var(--ink); }
+    .state-note b { display: block; margin-bottom: 4px; font: 17px var(--display); }
+    .state-note p { margin: 0; color: #51483B; font-size: 11px; }
+    .footer { padding: 24px 0 34px; background: var(--ink); color: var(--paper-2); }
+    .footer p { margin: 0; color: rgba(255,248,230,.75); font-size: 12px; }
+    @media (max-width: 1050px) { .screen-grid { grid-template-columns: repeat(2, minmax(230px, 1fr)); } }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 390px); }
+      .screen-grid { grid-template-columns: 1fr; }
+      .phone { width: min(100%, 360px); margin: 0 auto; }
+      .screen-meta { width: min(100%, 360px); margin-right: auto; margin-left: auto; }
+      .state-notes { grid-template-columns: 1fr; }
+      .chapter { padding: 27px 0 34px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <div class="eyebrow">P1 · USER SYSTEM ADD-ON</div>
+      <h1>学习记录，<br>这次真的留下来。</h1>
+      <p>用户系统一期补充原型：沿用核心闭环与学习扩展草图的纸感、粗描边、投影和小墨漫画风格，只呈现已确认的登录、个人资料、闯关历史与报告回看。</p>
+      <div class="scope-note"><b>范围标记：</b>这是新增功能的静态稿，不改动既有原型或 MVP 页面。首页仅展示拟新增的用户信息和最近历史入口；输入、出题、答题、报告主体沿用现有核心页面。所有示例数据均为占位内容。</div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#home">01 首页新增信息</a>
+    <a href="#profile">02 个人中心与历史</a>
+    <a href="#edit">03 资料编辑</a>
+    <a href="#detail">04 历史报告回看</a>
+    <a href="#states">状态说明</a>
+  </nav>
+
+  <main class="wrap">
+    <section class="chapter" id="home">
+      <div class="eyebrow">SCREEN 01 · HOME ADD-ON</div>
+      <h2>首页：只加用户信息入口</h2>
+      <p class="chapter-intro">保留原有首页的输入主流程；将真实昵称、累计 XP 和最近完成记录作为轻量新增卡片。用户卡片和历史项的摆放位置可在确认后再定。</p>
+      <div class="screen-grid">
+        <article class="screen-card">
+          <div class="screen-meta">
+            <span class="screen-number">01</span><h3>首页 · 学习者信息</h3>
+            <p>新增用户入口与最近历史；核心输入框及原有出题按钮保持原样。</p>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>⋯ ⊙</span></div>
+              <div class="topbar">
+                <div class="brand"><span class="brand-mark">AI</span><span>智学</span></div>
+                <span class="top-title">今日一话</span>
+                <button class="icon-button" aria-label="个人中心">我</button>
+              </div>
+              <div class="scroll">
+                <div class="account-card card">
+                  <div class="avatar">墨</div>
+                  <div class="account-copy"><strong>小墨同学</strong><span>累计经验 · 182 XP</span></div>
+                  <button class="edit-link">我的 →</button>
+                </div>
+                <div class="hero">今天想搞懂<br>点什么？<small>说一句话，我把它印成一话闯关漫画。</small></div>
+                <div class="input-card"><span>例如：为什么天空是蓝色的？</span><div class="input-foot">支持一句话 / 一段文本 · 0 / 500</div></div>
+                <button class="primary">开始印刷题目　→</button>
+                <div class="section-head"><h4>最近完成</h4><span>全部历史 →</span></div>
+                <div class="recent-item">
+                  <span class="recent-badge">01</span>
+                  <div class="recent-copy"><b>天空为什么是蓝色的</b><span>5 题 · 今天完成</span></div>
+                  <span class="percent">80%</span>
+                </div>
+                <div class="recent-item">
+                  <span class="recent-badge">02</span>
+                  <div class="recent-copy"><b>光合作用的秘密</b><span>5 题 · 昨天完成</span></div>
+                  <span class="percent">100%</span>
+                </div>
+                <p class="footnote">样例记录仅用于展示；空历史状态见下方说明。</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="chapter" id="profile">
+      <div class="eyebrow">SCREEN 02 · PROFILE + HISTORY</div>
+      <h2>个人中心：档案与历史合一</h2>
+      <p class="chapter-intro">显示接口返回的昵称、头像、总 XP、累计闯关次数、答对题数和平均正确率。历史列表按最近完成优先，点击条目进入该次报告。</p>
+      <div class="screen-grid">
+        <article class="screen-card">
+          <div class="screen-meta">
+            <span class="screen-number">02</span><h3>我的 · 学习档案</h3>
+            <p>只放本次用户系统范围内的数据和入口，不展示错题本、复习计划或知识库。</p>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>⋯ ⊙</span></div>
+              <div class="topbar"><button class="icon-button">←</button><span class="top-title">我的学习档案</span><span style="width:29px"></span></div>
+              <div class="scroll">
+                <div class="account-card card">
+                  <div class="avatar">墨</div>
+                  <div class="account-copy"><strong>小墨同学</strong><span>每一话，都算数。</span></div>
+                  <button class="edit-link">编辑</button>
+                </div>
+                <div class="xp-strip"><span>累计经验 XP</span><strong>182 XP</strong></div>
+                <div class="stats">
+                  <div class="stat"><b>12</b><span>完成闯关</span></div>
+                  <div class="stat"><b>46</b><span>答对题目</span></div>
+                  <div class="stat"><b>76.7%</b><span>平均正确率</span></div>
+                </div>
+                <div class="section-head"><h4>闯关历史</h4><span>最近在前</span></div>
+                <div class="history-list">
+                  <div class="history-item">
+                    <div class="history-title"><b>天空为什么是蓝色的</b><strong>80%</strong></div>
+                    <div class="history-meta"><span>4 / 5 题答对</span><span>今天 10:20</span></div>
+                    <div class="history-open">查看本话报告　→</div>
+                  </div>
+                  <div class="history-item">
+                    <div class="history-title"><b>光合作用的秘密</b><strong>100%</strong></div>
+                    <div class="history-meta"><span>5 / 5 题答对</span><span>昨天 18:05</span></div>
+                    <div class="history-open">查看本话报告　→</div>
+                  </div>
+                  <div class="history-item">
+                    <div class="history-title"><b>RAG 是怎么检索知识的</b><strong>60%</strong></div>
+                    <div class="history-meta"><span>3 / 5 题答对</span><span>10 月 18 日</span></div>
+                    <div class="history-open">查看本话报告　→</div>
+                  </div>
+                </div>
+                <p class="footnote">列表支持分页；继续下拉加载更早记录。</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="screen-card">
+          <div class="screen-meta">
+            <span class="screen-number">02B</span><h3>我的 · 空历史</h3>
+            <p>首次登录或尚未完成闯关时，明确说明原因并给返回首页的动作。</p>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>⋯ ⊙</span></div>
+              <div class="topbar"><button class="icon-button">←</button><span class="top-title">我的学习档案</span><span style="width:29px"></span></div>
+              <div class="scroll">
+                <div class="account-card card">
+                  <div class="avatar">墨</div>
+                  <div class="account-copy"><strong>新朋友</strong><span>累计经验 · 0 XP</span></div>
+                  <button class="edit-link">编辑</button>
+                </div>
+                <div class="stats">
+                  <div class="stat"><b>0</b><span>完成闯关</span></div>
+                  <div class="stat"><b>0</b><span>答对题目</span></div>
+                  <div class="stat"><b>—</b><span>平均正确率</span></div>
+                </div>
+                <div class="section-head"><h4>闯关历史</h4><span>0 条</span></div>
+                <div class="empty">
+                  <div class="empty-mascot">小墨</div>
+                  <b>书架还空着</b>
+                  <p>去印下第一话，学过的知识就会留在这里。</p>
+                  <button class="primary">回首页，开始学习 →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="chapter" id="edit">
+      <div class="eyebrow">SCREEN 03 · PROFILE EDIT</div>
+      <h2>资料编辑：只改昵称和头像 URL</h2>
+      <p class="chapter-intro">不做头像上传；头像地址按需求以 URL 编辑。保存失败时保留输入，成功后刷新资料与首页展示。</p>
+      <div class="screen-grid">
+        <article class="screen-card">
+          <div class="screen-meta">
+            <span class="screen-number">03</span><h3>编辑个人资料</h3>
+            <p>新增的编辑状态；不覆盖原有核心页。</p>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>⋯ ⊙</span></div>
+              <div class="topbar"><button class="icon-button">×</button><span class="top-title">编辑资料</span><span style="width:29px"></span></div>
+              <div class="scroll">
+                <div class="form-card card">
+                  <h4>给档案留个名字</h4>
+                  <div class="field">
+                    <label for="nickname">昵称</label>
+                    <input id="nickname" value="小墨同学">
+                    <p class="helper">最多 100 个字符，不能只输入空格。</p>
+                  </div>
+                  <div class="field">
+                    <label for="avatar-url">头像 URL</label>
+                    <input id="avatar-url" value="https://example.com/avatar.png">
+                    <p class="helper">支持 HTTP / HTTPS 图片地址；留空可恢复默认头像。</p>
+                  </div>
+                  <div class="actions">
+                    <button class="primary secondary">取消</button>
+                    <button class="primary">保存资料</button>
+                  </div>
+                </div>
+                <div class="gate">
+                  <strong>保存失败状态</strong>
+                  <p>网络或服务暂不可用时保留已填写内容，显示明确原因和重试入口，不回滚成假成功。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="chapter" id="detail">
+      <div class="eyebrow">SCREEN 04 · HISTORY REPORT</div>
+      <h2>历史回看：复用报告结构，读取云端快照</h2>
+      <p class="chapter-intro">内容沿用已确认的复盘报告结构；区别仅在于数据由历史详情接口提供。题目、作答、统计和报告均为本次闯关快照。</p>
+      <div class="screen-grid">
+        <article class="screen-card">
+          <div class="screen-meta">
+            <span class="screen-number">04</span><h3>历史详情 · 本话复盘</h3>
+            <p>从个人中心历史条目进入；无编辑答案或重算历史成绩的功能。</p>
+          </div>
+          <div class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>⋯ ⊙</span></div>
+              <div class="topbar"><button class="icon-button">←</button><span class="top-title">历史复盘</span><span style="width:29px"></span></div>
+              <div class="scroll">
+                <div class="accuracy"><div><b>80%</b><span>正确率</span></div></div>
+                <h3 class="report-title">天空为什么是蓝色的</h3>
+                <p class="report-sub">4 / 5 题答对 · 10 月 20 日 10:20</p>
+                <div class="report-block card">
+                  <h4>这一话的总结</h4>
+                  <p>蓝光波长较短，更容易被空气分子散射；天空的蓝色来自大气散射，不是海洋反射。</p>
+                </div>
+                <div class="report-block card">
+                  <h4>掌握点与薄弱点</h4>
+                  <p>✓ 瑞利散射<br>⌖ 月球上天空的颜色</p>
+                </div>
+                <div class="report-block card">
+                  <h4>答题记录</h4>
+                  <div class="answer-row"><span class="answer-num">01</span><span>蓝光为什么更容易散射？</span><span class="answer-tag">答对</span></div>
+                  <div class="answer-row"><span class="answer-num">02</span><span>月球白天天空是什么颜色？</span><span class="answer-tag answer-tag--wrong">答错</span></div>
+                  <div class="answer-row"><span class="answer-num">03</span><span>大气层在散射中起什么作用？</span><span class="answer-tag">答对</span></div>
+                </div>
+                <div class="report-block card">
+                  <h4>下一步建议</h4>
+                  <ul><li>用自己的话复述瑞利散射。</li><li>回看月球没有大气层时的天空现象。</li></ul>
+                </div>
+                <button class="primary">返回闯关历史</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="chapter" id="states">
+      <div class="eyebrow">STATE NOTES · REVIEW REQUIRED</div>
+      <h2>需要你确认的视觉与关键状态</h2>
+      <p class="chapter-intro">原型批准后才开始写用户系统前端。下面仅描述状态，不代表已实现。</p>
+      <div class="state-notes">
+        <div class="state-note">
+          <b>静默登录</b>
+          <p>小程序启动时后台调用登录接口；不展示独立登录页，不向微信索要与本需求无关的权限。失败不阻塞原有匿名核心流程。</p>
+        </div>
+        <div class="state-note">
+          <b>登录态过期</b>
+          <p>核心出题/报告请求清理失效 token 后以匿名方式继续；个人中心提示重新登录。具体提示样式请确认。</p>
+        </div>
+        <div class="state-note">
+          <b>加载或接口失败</b>
+          <p>档案和历史显示明确 loading/error 与重试，不显示写死统计；空历史仅显示引导，不伪造记录。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap"><p>AI智学 · 用户系统补充静态原型 · 仅用于人工确认，尚未接入小程序代码</p></div>
+  </footer>
+</body>
+</html>

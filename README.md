@@ -2,7 +2,7 @@
 
 微信小程序核心闭环：输入一段学习内容，生成 5 道闯关题，逐题即时讲解，并生成复盘报告。前端使用 Taro 4.3 + React + TypeScript，支持微信小程序和 H5 浏览器验收；后端使用 FastAPI、Pydantic v2 和 LangChain 的 OpenAI 兼容模型适配。
 
-本轮不包含联网搜索、账号体系、持久化服务端数据库或 P1/P2/P3 进阶玩法。学习记录保存在小程序本机；DeepSeek API Key 仅供后端读取。
+核心 MVP 的出题、答题与报告流程保持不变。本次用户系统扩展增加微信小程序登录用户的云端档案和闯关历史；H5 及未登录请求仍可匿名使用核心流程。学习记录也继续保存在小程序本机；DeepSeek API Key 仅供后端读取。本期不包含联网搜索或 P1/P2/P3 进阶玩法。
 
 ## 后端
 
@@ -38,6 +38,25 @@ Push-Location .\backend
 Pop-Location
 ```
 
+### 用户系统（微信小程序）
+
+用户系统后端使用 MySQL、SQLAlchemy asyncmy 和 Alembic。复制 `.env.example` 中的配置项到本机 `.env`，分别配置：
+
+- `DATABASE_URL`：应用运行数据库，使用 `mysql+asyncmy://...`。
+- `TEST_DATABASE_URL`：与运行数据库不同 schema 的测试数据库 URL。
+- `WECHAT_APP_ID`、`WECHAT_APP_SECRET`：仅由后端用于调用微信 `code2session`；不要放入小程序配置或提交到仓库。
+- `JWT_SECRET_KEY`：至少 32 个字符的随机密钥；不要使用示例值或提交真实密钥。
+
+迁移命令默认只针对测试库；首次建表前确认 `TEST_DATABASE_URL` 指向专用测试 schema：
+
+```powershell
+Push-Location .\backend
+..\.venv\Scripts\python -m alembic -x database=test upgrade head
+Pop-Location
+```
+
+应用启动时会连接 `DATABASE_URL`。未配置数据库时，匿名核心流程仍可运行，但用户系统接口和登录用户的数据持久化不可用。当前后端接口为 `POST /api/v1/user/login`、`GET/PUT /api/v1/user/profile`、`GET /api/v1/user/quizzes?page=1&page_size=10` 及 `GET /api/v1/user/quizzes/{quiz_id}`；除登录接口外均需 Bearer JWT。微信真实登录和正式库迁移需在配置好对应环境后单独验收。
+
 ## 小程序
 
 Taro CLI 4.3.0 的官方 React + TypeScript 脚手架生成在 `miniapp`。安装依赖并编译微信小程序：
@@ -52,7 +71,7 @@ Pop-Location
 
 用微信开发者工具打开 `miniapp`，或在编译后打开 `miniapp\dist`。脚手架里的 `project.config.json` 使用 `touristappid` 占位值，发布前请改成自己的 AppID。开发者工具本地调试时需按需启用本地服务器域名校验选项；真机和发布环境需要配置可访问的 HTTPS API 域名。
 
-小程序请求地址默认是 `http://127.0.0.1:8000`。可通过构建环境变量 `TARO_APP_API_BASE_URL` 指向本机局域网或已部署的后端地址；不要在小程序环境变量或前端代码里放置 DeepSeek 密钥。
+小程序请求地址默认是 `http://127.0.0.1:8000`。可通过构建环境变量 `TARO_APP_API_BASE_URL` 指向本机局域网或已部署的后端地址；不要在小程序环境变量或前端代码里放置 DeepSeek 密钥。微信小程序已接入静默登录、个人档案编辑、闯关历史分页和历史报告回看；登录失败时核心学习流程仍可匿名使用。H5 不启用用户系统。
 
 ## 浏览器验收（H5）
 
@@ -64,7 +83,7 @@ npm run dev:h5
 Pop-Location
 ```
 
-用浏览器打开 `http://localhost:10086`。如端口被占用，按 Taro 输出的地址打开，并把对应 origin（协议、主机、端口）加入根目录 `.env` 的逗号分隔 `CORS_ORIGINS`。H5 和小程序共用页面与 API；微信转发、相册授权/保存等微信原生能力须在微信开发者工具或真机中验收。H5 静态构建可用 `npm run build:h5`。
+用浏览器打开 `http://localhost:10086`。如端口被占用，按 Taro 输出的地址打开，并把对应 origin（协议、主机、端口）加入根目录 `.env` 的逗号分隔 `CORS_ORIGINS`。H5 和小程序共用核心学习页面与 API；用户系统仅在微信小程序启用。微信转发、相册授权/保存及静默登录须在微信开发者工具或真机中验收。H5 静态构建可用 `npm run build:h5`。
 
 分享海报支持 Canvas 保存到相册和微信转发；小程序码按原型明确保留为占位图，需取得正式小程序码后再替换。
 

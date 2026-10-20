@@ -6,6 +6,61 @@
   padding-top: 16rpx;
 }
 
+.home-user-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  margin: 10rpx 0 18rpx;
+  padding: 13rpx 16rpx;
+  text-align: left;
+  transform: rotate(-.35deg);
+}
+
+.home-user-avatar {
+  width: 76rpx;
+  height: 76rpx;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 4rpx solid #191510;
+  border-radius: 50%;
+  background: #ee4b2b;
+}
+
+.home-user-avatar-fallback {
+  display: grid;
+  place-items: center;
+  color: #fff8e6;
+  font-family: "YouYuan", "Microsoft YaHei", sans-serif;
+  font-size: 31rpx;
+}
+
+.home-user-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.home-user-name {
+  display: block;
+  overflow: hidden;
+  font-size: 25rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-user-xp {
+  display: block;
+  margin-top: 2rpx;
+  color: #5a5145;
+  font-size: 19rpx;
+}
+
+.home-user-link {
+  flex: 0 0 auto;
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
 .home-settings {
   font-size: 28rpx;
   letter-spacing: 3rpx;

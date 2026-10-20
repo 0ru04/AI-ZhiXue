@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button, Text, Textarea, View } from '@tarojs/components'
-import Taro from '@tarojs/taro'
-import { generateQuiz, type ApiRequest } from '../../services/api'
-import type { Quiz } from '../../types'
+import { Button, Image, Text, Textarea, View } from '@tarojs/components'
+import Taro, { useDidShow } from '@tarojs/taro'
+import {
+  generateQuiz,
+  getUserProfile,
+  type ApiRequest,
+} from '../../services/api'
+import { ensureWechatLogin, hasExplicitlyLoggedOut } from '../../services/auth'
+import type { Quiz, UserProfile } from '../../types'
 import { createRun, saveRun } from '../../utils/session'
 import './index.scss'
 
@@ -35,8 +40,46 @@ export default function Index() {
   const [loadingStep, setLoadingStep] = useState(0)
   const [errorMessage, setErrorMessage] = useState('')
   const [showMoreExamples, setShowMoreExamples] = useState(false)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [userCardState, setUserCardState] = useState<
+    'loading' | 'ready' | 'anonymous' | 'error'
+  >('loading')
+  const [wechatLoggedOut, setWechatLoggedOut] = useState(false)
   const activeRequest = useRef<ApiRequest<Quiz> | null>(null)
   const requestSequence = useRef(0)
+  const homeRequestSequence = useRef(0)
+
+  useDidShow(() => {
+    if (process.env.TARO_ENV !== 'weapp') return
+
+    const sequence = homeRequestSequence.current + 1
+    homeRequestSequence.current = sequence
+    setUserCardState('loading')
+
+    void (async () => {
+      const token = await ensureWechatLogin()
+      if (homeRequestSequence.current !== sequence) return
+      if (!token) {
+        setUserProfile(null)
+        setWechatLoggedOut(hasExplicitlyLoggedOut())
+        setUserCardState('anonymous')
+        return
+      }
+
+      setWechatLoggedOut(false)
+      try {
+        const profile = await getUserProfile()
+        if (homeRequestSequence.current !== sequence) return
+        setUserProfile(profile)
+        setUserCardState('ready')
+      } catch (error) {
+        if (homeRequestSequence.current !== sequence) return
+        console.error('首页学习档案加载失败。', error)
+        setUserProfile(null)
+        setUserCardState('error')
+      }
+    })()
+  })
 
   useEffect(() => {
     if (mode !== 'loading') return undefined
@@ -62,7 +105,7 @@ export default function Index() {
     try {
       const quiz = await request.promise
       if (requestSequence.current !== sequence) return
-      saveRun(createRun(quiz))
+      saveRun(createRun(quiz, await request.authenticated))
       await Taro.navigateTo({ url: '/pages/quiz/index' })
     } catch (error) {
       if (requestSequence.current !== sequence) return
@@ -112,15 +155,25 @@ export default function Index() {
                 <Text>智学</Text>
               </View>
               <Text className='chip chip-yellow'>今日一话</Text>
-              <Button
-                className='icon-button home-settings'
-                aria-label='设置'
-                onClick={() =>
-                  Taro.showToast({ title: '先专心闯过这一话吧', icon: 'none' })
-                }
-              >
-                ···
-              </Button>
+              {process.env.TARO_ENV === 'weapp' ? (
+                <Button
+                  className='icon-button home-settings'
+                  aria-label='我的'
+                  onClick={() => Taro.navigateTo({ url: '/pages/profile/index' })}
+                >
+                  我
+                </Button>
+              ) : (
+                <Button
+                  className='icon-button home-settings'
+                  aria-label='设置'
+                  onClick={() =>
+                    Taro.showToast({ title: '先专心闯过这一话吧', icon: 'none' })
+                  }
+                >
+                  ···
+                </Button>
+              )}
             </>
           ) : (
             <>
@@ -221,6 +274,63 @@ export default function Index() {
           </View>
         ) : (
           <>
+            {process.env.TARO_ENV === 'weapp' && (
+              <>
+                <Button
+                  className='home-user-card panel panel-yellow'
+                  onClick={() => Taro.navigateTo({ url: '/pages/profile/index' })}
+                >
+                  {userCardState === 'ready' && userProfile ? (
+                    <>
+                      {userProfile.avatar_url ? (
+                        <Image
+                          className='home-user-avatar'
+                          src={userProfile.avatar_url}
+                          mode='aspectFill'
+                        />
+                      ) : (
+                        <View className='home-user-avatar home-user-avatar-fallback'>
+                          {userProfile.nickname.slice(0, 1)}
+                        </View>
+                      )}
+                      <View className='home-user-copy'>
+                        <Text className='display-font home-user-name'>
+                          {userProfile.nickname}
+                        </Text>
+                        <Text className='home-user-xp'>
+                          累计经验 · {userProfile.total_xp} XP
+                        </Text>
+                      </View>
+                      <Text className='home-user-link'>我的 ›</Text>
+                    </>
+                  ) : (
+                    <>
+                      <View className='home-user-avatar home-user-avatar-fallback'>
+                        {userCardState === 'loading' ? '…' : '墨'}
+                      </View>
+                      <View className='home-user-copy'>
+                        <Text className='display-font home-user-name'>
+                          {userCardState === 'loading'
+                            ? '正在同步学习档案'
+                            : userCardState === 'error'
+                              ? '学习数据暂时没有同步'
+                              : wechatLoggedOut
+                                ? '已退出微信身份'
+                                : '微信登录暂不可用'}
+                        </Text>
+                        <Text className='home-user-xp'>
+                          {userCardState === 'anonymous'
+                            ? '仍可匿名继续学习'
+                            : '点击查看或重试'}
+                        </Text>
+                      </View>
+                      <Text className='home-user-link'>我的 ›</Text>
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+
             <View className='home-hero'>
               <Text className='hero-episode'>第 001 话</Text>
               <View className='hero-row'>
@@ -290,7 +400,11 @@ export default function Index() {
 
             <View className='home-footnote'>
               <Text className='footnote-check'>✓</Text>
-              <Text>MVP 无需登录；生成记录只保存在本机。</Text>
+              <Text>
+                {process.env.TARO_ENV === 'weapp'
+                  ? '登录后同步闯关记录；未登录也能继续学习。'
+                  : 'MVP 无需登录；生成记录只保存在本机。'}
+              </Text>
             </View>
 
             <View className='daily-card'>

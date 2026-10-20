@@ -3,9 +3,10 @@ import type { Quiz, RunState } from '../types'
 
 const RUN_STORAGE_KEY = 'ai-zhi-xue-active-run'
 
-export function createRun(quiz: Quiz): RunState {
+export function createRun(quiz: Quiz, userPersisted = false): RunState {
   return {
     quiz,
+    user_persisted: userPersisted,
     current_index: 0,
     selected_answers: [],
     answer_records: [],

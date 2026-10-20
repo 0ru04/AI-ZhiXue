@@ -36,6 +36,52 @@ class Settings(BaseSettings):
     )
     llm_max_attempts: int = Field(default=2, ge=1, le=3)
     llm_timeout_seconds: float = Field(default=30, gt=0, le=120)
+    database_url: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices("DATABASE_URL", "database_url"),
+    )
+    test_database_url: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices("TEST_DATABASE_URL", "test_database_url"),
+    )
+    wechat_app_id: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "WECHAT_APP_ID",
+            "WECHAT_APPID",
+            "wechat_app_id",
+        ),
+    )
+    wechat_app_secret: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "WECHAT_APP_SECRET",
+            "WECHAT_SECRET",
+            "wechat_app_secret",
+        ),
+    )
+    jwt_secret_key: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices("JWT_SECRET_KEY", "jwt_secret_key"),
+    )
+    jwt_expiration_days: int = Field(
+        default=7,
+        ge=1,
+        le=90,
+        validation_alias=AliasChoices(
+            "JWT_EXPIRATION_DAYS",
+            "jwt_expiration_days",
+        ),
+    )
+    wechat_api_timeout_seconds: float = Field(
+        default=5,
+        gt=0,
+        le=30,
+        validation_alias=AliasChoices(
+            "WECHAT_API_TIMEOUT_SECONDS",
+            "wechat_api_timeout_seconds",
+        ),
+    )
 
     @property
     def allowed_origins(self) -> list[str]:

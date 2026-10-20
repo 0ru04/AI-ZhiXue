@@ -1,0 +1,94 @@
+.profile-edit-page {
+  min-height: 100vh;
+}
+
+.profile-edit-topbar {
+  min-height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rpx 30rpx;
+}
+
+.profile-edit-topbar-title {
+  font-size: 32rpx;
+}
+
+.profile-edit-spacer {
+  width: 58rpx;
+}
+
+.profile-edit-content {
+  padding: 14rpx 30rpx 40rpx;
+}
+
+.profile-edit-form {
+  padding: 24rpx 22rpx;
+}
+
+.profile-edit-title {
+  display: block;
+  margin-bottom: 19rpx;
+  font-size: 31rpx;
+}
+
+.profile-edit-field {
+  margin-top: 19rpx;
+}
+
+.profile-edit-label {
+  display: block;
+  margin-bottom: 7rpx;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.profile-edit-input {
+  width: 100%;
+  height: 78rpx;
+  padding: 0 14rpx;
+  border: 4rpx solid #191510;
+  background: #fff;
+  color: #191510;
+  font-size: 23rpx;
+}
+
+.profile-edit-helper {
+  display: block;
+  margin-top: 6rpx;
+  color: #776c5a;
+  font-size: 19rpx;
+}
+
+.profile-edit-actions {
+  display: flex;
+  gap: 13rpx;
+  margin-top: 27rpx;
+}
+
+.profile-edit-actions button {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-edit-error {
+  display: block;
+  margin-top: 14rpx;
+  color: #b9341d;
+  font-size: 21rpx;
+  line-height: 1.55;
+}
+
+.profile-edit-state {
+  margin: 16rpx 30rpx;
+  padding: 25rpx;
+}
+
+.profile-edit-state .profile-edit-title {
+  text-align: center;
+}
+
+.profile-edit-gate {
+  justify-content: center;
+  padding: 35rpx;
+}

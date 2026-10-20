@@ -31,3 +31,39 @@ class AIProviderError(APIError):
             code=5001,
             status_code=502,
         )
+
+
+class AuthenticationError(APIError):
+    def __init__(self) -> None:
+        super().__init__(
+            "登录状态无效，请重新登录",
+            code=4010,
+            status_code=401,
+        )
+
+
+class UserSystemConfigurationError(APIError):
+    def __init__(self, message: str = "用户系统尚未配置，请联系管理员") -> None:
+        super().__init__(
+            message,
+            code=5032,
+            status_code=503,
+        )
+
+
+class WechatLoginError(APIError):
+    def __init__(self) -> None:
+        super().__init__(
+            "微信登录暂时不可用，请稍后重试",
+            code=5021,
+            status_code=502,
+        )
+
+
+class UserResourceNotFoundError(APIError):
+    def __init__(self) -> None:
+        super().__init__(
+            "记录不存在",
+            code=4040,
+            status_code=404,
+        )

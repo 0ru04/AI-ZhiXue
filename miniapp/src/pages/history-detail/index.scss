@@ -1,0 +1,276 @@
+.history-detail-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.history-detail-topbar {
+  min-height: 84rpx;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rpx 30rpx;
+}
+
+.history-detail-topbar-title {
+  font-size: 32rpx;
+}
+
+.history-detail-spacer {
+  width: 58rpx;
+}
+
+.history-detail-scroll {
+  flex: 1 1 auto;
+  height: 0;
+}
+
+.history-detail-content {
+  padding: 12rpx 30rpx 42rpx;
+}
+
+.history-accuracy-ring {
+  width: 212rpx;
+  height: 212rpx;
+  display: grid;
+  place-items: center;
+  margin: 7rpx auto 18rpx;
+  border: 13rpx solid #2f9e62;
+  border-radius: 50%;
+  background: #fbe08a;
+  box-shadow: 5rpx 5rpx 0 #191510;
+  transform: rotate(-4deg);
+}
+
+.history-accuracy-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: rotate(4deg);
+}
+
+.history-accuracy-value {
+  color: #ee4b2b;
+  font-family: Impact, sans-serif;
+  font-size: 59rpx;
+  line-height: 1;
+}
+
+.history-accuracy-label {
+  margin-top: 7rpx;
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
+.history-detail-title {
+  display: block;
+  font-size: 32rpx;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.history-detail-subtitle,
+.history-detail-time {
+  display: block;
+  color: #776c5a;
+  font-size: 20rpx;
+  text-align: center;
+}
+
+.history-detail-subtitle {
+  margin-top: 8rpx;
+}
+
+.history-detail-time {
+  margin-top: 5rpx;
+}
+
+.history-report-section {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  box-shadow: 4rpx 4rpx 0 #191510;
+}
+
+.history-summary {
+  background: #fff8e6;
+}
+
+.history-section-title {
+  display: block;
+  margin-bottom: 11rpx;
+  font-size: 27rpx;
+}
+
+.history-summary-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 11rpx;
+  margin-top: 9rpx;
+  font-size: 22rpx;
+  line-height: 1.65;
+}
+
+.history-summary-number {
+  width: 34rpx;
+  height: 34rpx;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 2rpx solid #191510;
+  border-radius: 50%;
+  background: #f5c542;
+  font-family: Impact, sans-serif;
+  font-size: 19rpx;
+}
+
+.history-point-label {
+  display: block;
+  margin: 14rpx 0 7rpx;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.history-point-mastered {
+  color: #2f9e62;
+}
+
+.history-point-weak {
+  color: #ee4b2b;
+}
+
+.history-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9rpx;
+}
+
+.history-tag {
+  padding: 5rpx 12rpx;
+  border: 2rpx solid #191510;
+  border-radius: 999rpx;
+  background: #dff1e6;
+  font-size: 20rpx;
+}
+
+.history-tag-weak {
+  background: #fbe1db;
+}
+
+.history-empty-points {
+  font-size: 21rpx;
+}
+
+.history-answer {
+  display: flex;
+  align-items: flex-start;
+  gap: 9rpx;
+  padding: 12rpx 0;
+  border-top: 2rpx dashed rgba(25, 21, 16, .25);
+}
+
+.history-answer:first-of-type {
+  border-top: 0;
+}
+
+.history-answer-number {
+  flex: 0 0 auto;
+  color: #ee4b2b;
+  font-family: Impact, sans-serif;
+  font-size: 21rpx;
+}
+
+.history-answer-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.history-question-title,
+.history-answer-selected,
+.history-answer-correct {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1.55;
+}
+
+.history-question-title {
+  margin-bottom: 4rpx;
+  font-weight: 800;
+}
+
+.history-answer-selected {
+  color: #5a5145;
+}
+
+.history-answer-correct {
+  color: #2f8754;
+}
+
+.history-answer-tag {
+  flex: 0 0 auto;
+  padding: 1rpx 7rpx;
+  border: 2rpx solid #191510;
+  background: #dff1e6;
+  font-size: 18rpx;
+}
+
+.history-answer-tag-wrong {
+  background: #fbe1db;
+}
+
+.history-advice-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9rpx;
+  margin-top: 8rpx;
+  font-size: 21rpx;
+  line-height: 1.6;
+}
+
+.history-advice-dot {
+  color: #ee4b2b;
+  font-size: 32rpx;
+  line-height: 1.2;
+}
+
+.history-detail-back {
+  margin-top: 23rpx;
+}
+
+.history-detail-state {
+  justify-content: center;
+  padding: 35rpx;
+}
+
+.history-state-panel {
+  padding: 27rpx 23rpx;
+  text-align: center;
+}
+
+.history-state-mark {
+  width: 112rpx;
+  height: 112rpx;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16rpx;
+  border: 6rpx dashed rgba(25, 21, 16, .35);
+  border-radius: 50%;
+  color: #ee4b2b;
+  font-family: Impact, sans-serif;
+  font-size: 41rpx;
+}
+
+.history-state-title {
+  display: block;
+  margin-bottom: 9rpx;
+  font-size: 31rpx;
+}
+
+.history-state-copy {
+  display: block;
+  margin-bottom: 18rpx;
+  font-size: 21rpx;
+}
+
+.history-state-back {
+  margin-top: 15rpx;
+}

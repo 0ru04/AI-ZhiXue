@@ -1,0 +1,287 @@
+.profile-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.profile-topbar {
+  min-height: 84rpx;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rpx 30rpx;
+}
+
+.profile-topbar-title {
+  font-size: 32rpx;
+}
+
+.profile-topbar-spacer {
+  width: 58rpx;
+}
+
+.profile-scroll {
+  flex: 1 1 auto;
+  height: 0;
+}
+
+.profile-content {
+  padding: 12rpx 30rpx 42rpx;
+}
+
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 20rpx;
+  transform: rotate(-.35deg);
+}
+
+.profile-avatar {
+  width: 108rpx;
+  height: 108rpx;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 5rpx solid #191510;
+  border-radius: 50%;
+  background: #ee4b2b;
+}
+
+.profile-avatar-fallback {
+  display: grid;
+  place-items: center;
+  color: #fff8e6;
+  font-family: "YouYuan", "Microsoft YaHei", sans-serif;
+  font-size: 45rpx;
+}
+
+.profile-identity-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-nickname {
+  display: block;
+  overflow: hidden;
+  font-size: 32rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-tagline {
+  display: block;
+  margin-top: 4rpx;
+  color: #5a5145;
+  font-size: 21rpx;
+}
+
+.profile-edit-button {
+  padding: 6rpx 13rpx;
+  border: 3rpx solid #191510;
+  background: #fff8e6;
+  font-size: 21rpx;
+}
+
+.profile-xp-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 17rpx;
+  padding: 15rpx 19rpx;
+  border: 4rpx solid #191510;
+  background: #f5c542;
+  box-shadow: 5rpx 5rpx 0 #191510;
+  font-size: 23rpx;
+}
+
+.profile-xp-value {
+  font-family: Impact, sans-serif;
+  font-size: 34rpx;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.profile-stat {
+  display: flex;
+  min-height: 112rpx;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 4rpx;
+  box-shadow: 4rpx 4rpx 0 #191510;
+  text-align: center;
+}
+
+.profile-stat-value {
+  color: #ee4b2b;
+  font-family: Impact, sans-serif;
+  font-size: 35rpx;
+  line-height: 1.2;
+}
+
+.profile-stat-label {
+  color: #776c5a;
+  font-size: 19rpx;
+}
+
+.profile-history-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 27rpx 2rpx 11rpx;
+}
+
+.profile-section-title {
+  font-size: 30rpx;
+}
+
+.profile-history-total {
+  font-size: 21rpx;
+}
+
+.profile-history-list {
+  display: grid;
+  gap: 13rpx;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14rpx;
+  min-height: 112rpx;
+  padding: 16rpx 18rpx;
+  border: 4rpx solid #191510;
+  background: #fff8e6;
+  box-shadow: 4rpx 4rpx 0 #191510;
+  text-align: left;
+}
+
+.history-row-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.history-row-title {
+  display: block;
+  overflow: hidden;
+  font-size: 25rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-row-date {
+  display: block;
+  margin-top: 5rpx;
+  color: #776c5a;
+  font-size: 19rpx;
+}
+
+.history-row-result {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.history-row-score {
+  color: #ee4b2b;
+  font-family: Impact, sans-serif;
+  font-size: 31rpx;
+}
+
+.history-row-count {
+  color: #776c5a;
+  font-size: 19rpx;
+}
+
+.profile-empty {
+  padding: 28rpx 22rpx;
+  text-align: center;
+}
+
+.profile-empty-mascot {
+  display: block;
+  color: #ee4b2b;
+  font-size: 42rpx;
+}
+
+.profile-empty-title {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 30rpx;
+}
+
+.profile-empty-copy {
+  display: block;
+  margin: 8rpx 0 18rpx;
+  font-size: 22rpx;
+}
+
+.profile-load-more,
+.profile-secondary-action {
+  margin-top: 16rpx;
+}
+
+.profile-logout-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32rpx;
+  color: #b9341d;
+}
+
+.profile-state {
+  margin: 16rpx 30rpx;
+  padding: 28rpx 24rpx;
+  text-align: center;
+}
+
+.profile-loading-mark {
+  width: 116rpx;
+  height: 116rpx;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16rpx;
+  border: 6rpx dashed rgba(25, 21, 16, .35);
+  border-radius: 50%;
+  color: #ee4b2b;
+  font-family: Impact, sans-serif;
+  font-size: 42rpx;
+}
+
+.profile-state-title {
+  display: block;
+  font-size: 31rpx;
+}
+
+.profile-state-copy {
+  display: block;
+  margin: 9rpx 0 19rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+.profile-inline-error {
+  display: block;
+  margin-top: 15rpx;
+  color: #b9341d;
+  font-size: 21rpx;
+}
+
+.profile-gate {
+  justify-content: center;
+  padding: 35rpx;
+}
+
+.profile-gate-title {
+  margin-bottom: 22rpx;
+  font-size: 33rpx;
+  text-align: center;
+}

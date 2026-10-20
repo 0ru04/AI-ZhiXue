@@ -48,10 +48,55 @@ export interface Report {
   share_quote: string
 }
 
+export interface UserSummary {
+  id: number
+  nickname: string
+  avatar_url: string | null
+  total_xp: number
+}
+
+export interface UserProfile extends UserSummary {
+  quiz_count: number
+  correct_count: number
+  average_accuracy: number
+}
+
+export interface LoginResponse {
+  token: string
+  user: UserSummary
+}
+
+export interface QuizHistoryItem {
+  quiz_id: string
+  title: string
+  accuracy: number
+  question_count: number
+  created_at: string
+}
+
+export interface QuizHistoryPage {
+  items: QuizHistoryItem[]
+  total: number
+  page: number
+  page_size: number
+}
+
+export interface QuizHistoryDetail {
+  quiz_id: string
+  title: string
+  summary: string | null
+  user_input: string
+  questions: Question[]
+  answer_records: AnswerRecord[]
+  report: Report
+  created_at: string
+}
+
 export type ReportStatus = 'idle' | 'loading' | 'error' | 'ready'
 
 export interface RunState {
   quiz: Quiz
+  user_persisted?: boolean
   current_index: number
   selected_answers: string[]
   answer_records: AnswerRecord[]
