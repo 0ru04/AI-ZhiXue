@@ -67,5 +67,5 @@ class QuizGenerationOutput(QuizContent):
 
 class Quiz(QuizContent):
     quiz_id: str = Field(min_length=1, max_length=64)
-    source_type: Literal["text"] = "text"
+    source_type: Literal["text", "document", "web", "video"] = "text"
     user_input: str = Field(min_length=1, max_length=500)

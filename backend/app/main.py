@@ -8,7 +8,13 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from app.api.v1.routes import health_router, quiz_router, report_router, user_router
+from app.api.v1.routes import (
+    health_router,
+    quiz_router,
+    report_router,
+    source_import_router,
+    user_router,
+)
 from app.core.config import Settings, get_settings
 from app.core.exceptions import APIError
 from app.db.session import create_database
@@ -57,6 +63,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(health_router, prefix="/api/v1")
     application.include_router(quiz_router, prefix="/api/v1")
     application.include_router(report_router, prefix="/api/v1")
+    application.include_router(source_import_router, prefix="/api/v1")
     application.include_router(user_router, prefix="/api/v1")
 
     @application.exception_handler(APIError)

@@ -10,6 +10,7 @@ const userPages =
 export default defineAppConfig({
   pages: [
     'pages/index/index',
+    'pages/import/index',
     'pages/quiz/index',
     'pages/report/index',
     ...userPages,

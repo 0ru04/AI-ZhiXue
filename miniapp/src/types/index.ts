@@ -21,9 +21,18 @@ export interface Quiz {
   quiz_id: string
   title: string
   summary: string
-  source_type: 'text'
+  source_type: 'text' | 'document' | 'web' | 'video'
   user_input: string
   questions: Question[]
+}
+
+export interface ParsedSource {
+  source_type: 'document' | 'web' | 'video'
+  title: string
+  content: string
+  headings: string[]
+  knowledge_points: string[]
+  source_url: string | null
 }
 
 export interface AnswerRecord {

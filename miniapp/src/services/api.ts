@@ -3,6 +3,7 @@ import type {
   Quiz,
   QuizHistoryDetail,
   QuizHistoryPage,
+  ParsedSource,
   Report,
   RunState,
   UserProfile,
@@ -27,12 +28,13 @@ function createTask<T>(
   method: RequestMethod,
   data: object | undefined,
   token: string | null,
+  timeout = 65000,
 ) {
   return Taro.request<ApiEnvelope<T>>({
     url: `${API_BASE_URL}/api/v1${path}`,
     method,
     data,
-    timeout: 65000,
+    timeout,
     header: {
       'content-type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -60,6 +62,7 @@ function post<T>(
   data: object,
   retryAnonymouslyOnUnauthorized = false,
   useAuthentication = true,
+  timeout = 65000,
 ): ApiRequest<T> {
   let activeTask: ReturnType<typeof createTask<T>> | null = null
   let aborted = false
@@ -71,14 +74,14 @@ function post<T>(
     if (aborted) throw new Error('请求已取消')
 
     try {
-      activeTask = createTask<T>(path, 'POST', data, token)
+      activeTask = createTask<T>(path, 'POST', data, token, timeout)
       let response = await activeTask
       if (response.statusCode === 401) {
         clearAuthToken()
         if (token && retryAnonymouslyOnUnauthorized) {
           token = null
           requestAuthenticated = false
-          activeTask = createTask<T>(path, 'POST', data, token)
+          activeTask = createTask<T>(path, 'POST', data, token, timeout)
           response = await activeTask
         }
       }
@@ -119,6 +122,76 @@ async function authenticatedRequest<T>(
 
 export function generateQuiz(userInput: string): ApiRequest<Quiz> {
   return post<Quiz>('/quiz/generate', { user_input: userInput }, true)
+}
+
+export function parseSourceUrl(url: string): Promise<ParsedSource> {
+  return post<ParsedSource>(
+    '/source/parse/url',
+    { url },
+    false,
+    false,
+    120000,
+  ).promise
+}
+
+export function generateSourceQuiz(
+  source: ParsedSource,
+  knowledgePoints: string[],
+): ApiRequest<Quiz> {
+  return post<Quiz>(
+    '/source/generate',
+    {
+      source_type: source.source_type,
+      title: source.title,
+      content: source.content,
+      headings: source.headings,
+      knowledge_points: knowledgePoints,
+    },
+    true,
+    true,
+    120000,
+  )
+}
+
+export async function parseSourceDocument(
+  filePath: string,
+  fileName: string,
+): Promise<ParsedSource> {
+  const upload = (token: string | null) =>
+    Taro.uploadFile({
+      url: `${API_BASE_URL}/api/v1/source/parse/document`,
+      filePath,
+      name: 'file',
+      formData: { file_name: fileName },
+      timeout: 120000,
+      header: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+
+  let token = await ensureWechatLogin()
+  let response = await upload(token)
+  if (response.statusCode === 401) {
+    clearAuthToken()
+    if (token) {
+      token = null
+      response = await upload(null)
+    }
+  }
+
+  let envelope: ApiEnvelope<ParsedSource>
+  try {
+    envelope = JSON.parse(response.data) as ApiEnvelope<ParsedSource>
+  } catch {
+    throw new Error('文件解析服务返回了无法识别的数据')
+  }
+  if (
+    response.statusCode < 200 ||
+    response.statusCode >= 300 ||
+    envelope.code !== 0 ||
+    envelope.data === null
+  ) {
+    throw new Error(envelope.message || '文件解析失败，请检查文件后重试')
+  }
+  return envelope.data
 }
 
 export function generateReport(run: RunState): ApiRequest<Report> {

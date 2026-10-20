@@ -67,3 +67,17 @@ class UserResourceNotFoundError(APIError):
             code=4040,
             status_code=404,
         )
+
+
+class SourceImportError(APIError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int = 400,
+    ) -> None:
+        super().__init__(
+            message,
+            code=4130 if status_code == 413 else 4004,
+            status_code=status_code,
+        )

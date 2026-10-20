@@ -106,6 +106,58 @@ def test_quiz_service_returns_error_after_retry_limit():
     assert len(factory.calls) == 2
 
 
+def test_quiz_service_generates_from_confirmed_source_points(question_data):
+    factory = ChainFactory(
+        {
+            "title": "Rayleigh scattering",
+            "summary": "The source explains the blue sky.",
+            "questions": question_data,
+        }
+    )
+    service = QuizService(
+        Settings(deepseek_api_key="test-key", content_blocklist=""),
+        chain_factory=factory,
+    )
+
+    quiz = asyncio.run(
+        service.generate_from_source(
+            source_type="web",
+            title="Blue sky article",
+            content="Air molecules scatter short wavelengths of visible light.",
+            knowledge_points=["Rayleigh scattering"],
+        )
+    )
+
+    assert quiz.source_type == "web"
+    assert quiz.user_input.startswith("网页：Blue sky article")
+    assert "Air molecules scatter" not in quiz.user_input
+    assert factory.calls[0][3].inputs == {
+        "user_input": "Air molecules scatter short wavelengths of visible light.",
+        "title": "Blue sky article",
+        "knowledge_points": "Rayleigh scattering",
+    }
+
+
+def test_quiz_service_blocks_unsafe_source_points_before_llm():
+    factory = ChainFactory({"title": "unused"})
+    service = QuizService(
+        Settings(deepseek_api_key="test-key", content_blocklist="blocked phrase"),
+        chain_factory=factory,
+    )
+
+    with pytest.raises(ContentBlockedError):
+        asyncio.run(
+            service.generate_from_source(
+                source_type="document",
+                title="Study notes",
+                content="Safe content.",
+                knowledge_points=["blocked phrase"],
+            )
+        )
+
+    assert factory.calls == []
+
+
 def test_report_service_generates_narrative_but_uses_server_calculated_score(
     report_request,
 ):

@@ -398,6 +398,13 @@ export default function Index() {
               开始印刷题目 <Text className='button-arrow'>→</Text>
             </Button>
 
+            <Button
+              className='primary-button button-ghost import-entry'
+              onClick={() => Taro.navigateTo({ url: '/pages/import/index' })}
+            >
+              ＋ 导入学习材料
+            </Button>
+
             <View className='home-footnote'>
               <Text className='footnote-check'>✓</Text>
               <Text>
