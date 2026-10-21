@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime
 from typing import AsyncIterator
 
 from fastapi import FastAPI, Request
@@ -29,7 +30,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         engine: AsyncEngine | None = None
-        application.state.db_session_factory = None
+        application.state.started_at = datetime.now()
+        application.state.db_session_factory = getattr(
+            application.state,
+            "db_session_factory",
+            None,
+        )
         if settings.database_url is not None:
             try:
                 engine, session_factory = create_database(

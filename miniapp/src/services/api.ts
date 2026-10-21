@@ -1,6 +1,7 @@
 import Taro from '@tarojs/taro'
 import type {
   Quiz,
+  QuizGenerationTask,
   QuizHistoryDetail,
   QuizHistoryPage,
   ParsedSource,
@@ -120,8 +121,57 @@ async function authenticatedRequest<T>(
   return unwrap(response)
 }
 
-export function generateQuiz(userInput: string): ApiRequest<Quiz> {
-  return post<Quiz>('/quiz/generate', { user_input: userInput }, true)
+export function generateQuiz(userInput: string): ApiRequest<QuizGenerationTask> {
+  return post<QuizGenerationTask>(
+    '/quiz/generate',
+    { user_input: userInput },
+    true,
+  )
+}
+
+async function getQuizGenerationTask(
+  taskId: string,
+  authenticated: boolean,
+): Promise<QuizGenerationTask> {
+  const token = authenticated ? await ensureWechatLogin() : null
+  if (authenticated && !token) {
+    throw new Error('微信登录暂不可用，请重试查看生成状态')
+  }
+  const response = await createTask<QuizGenerationTask>(
+    `/quiz/tasks/${encodeURIComponent(taskId)}`,
+    'GET',
+    undefined,
+    token,
+  )
+  if (response.statusCode === 401) {
+    clearAuthToken()
+    throw new Error('登录状态已失效，请重新登录后查看生成结果')
+  }
+  return unwrap(response)
+}
+
+export async function waitForQuizGeneration(
+  taskId: string,
+  authenticated: boolean,
+  shouldStop: () => boolean = () => false,
+  onStatus?: (status: QuizGenerationTask['status']) => void,
+): Promise<Quiz> {
+  const deadline = Date.now() + 300_000
+  while (Date.now() < deadline) {
+    if (shouldStop()) throw new Error('请求已取消')
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const task = await getQuizGenerationTask(taskId, authenticated)
+    if (shouldStop()) throw new Error('请求已取消')
+    onStatus?.(task.status)
+    if (task.status === 'completed') {
+      if (task.quiz) return task.quiz
+      throw new Error('任务已完成，但题目结果暂时无法读取，请重新生成')
+    }
+    if (task.status === 'failed') {
+      throw new Error(task.error_message || '题目生成失败，请稍后重试')
+    }
+  }
+  throw new Error('生成时间较长，请稍后重试；任务仍在后台处理中')
 }
 
 export function parseSourceUrl(url: string): Promise<ParsedSource> {
@@ -137,8 +187,8 @@ export function parseSourceUrl(url: string): Promise<ParsedSource> {
 export function generateSourceQuiz(
   source: ParsedSource,
   knowledgePoints: string[],
-): ApiRequest<Quiz> {
-  return post<Quiz>(
+): ApiRequest<QuizGenerationTask> {
+  return post<QuizGenerationTask>(
     '/source/generate',
     {
       source_type: source.source_type,

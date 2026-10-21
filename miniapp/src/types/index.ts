@@ -26,6 +26,15 @@ export interface Quiz {
   questions: Question[]
 }
 
+export interface QuizGenerationTask {
+  task_id: string
+  status: 'queued' | 'running' | 'completed' | 'failed'
+  created_at: string
+  updated_at: string
+  quiz: Quiz | null
+  error_message: string | null
+}
+
 export interface ParsedSource {
   source_type: 'document' | 'web' | 'video'
   title: string

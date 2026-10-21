@@ -14,6 +14,7 @@ from app.core.exceptions import (
 from app.llm.factory import create_structured_chain
 from app.models.quiz import Quiz, QuizGenerationOutput
 from app.prompts.quiz_prompt import QUIZ_PROMPT, SOURCE_QUIZ_PROMPT
+from app.services.live_knowledge_service import LiveKnowledgeService
 from app.utils.content_filter import ensure_content_allowed
 
 
@@ -25,16 +26,24 @@ class QuizService:
         self,
         settings: Settings,
         chain_factory: Callable = create_structured_chain,
+        knowledge_service: LiveKnowledgeService | None = None,
     ) -> None:
         self.settings = settings
         self.chain_factory = chain_factory
+        self.knowledge_service = knowledge_service
 
     async def generate(self, user_input: str) -> Quiz:
         clean_input = user_input.strip()
+        knowledge_summary = None
+        if self.knowledge_service is not None:
+            knowledge_summary = await self.knowledge_service.get_knowledge_summary(
+                clean_input
+            )
         return await self._generate(
             content=clean_input,
             user_input=clean_input,
             source_type="text",
+            knowledge_summary=knowledge_summary,
         )
 
     async def generate_from_source(
@@ -81,6 +90,7 @@ class QuizService:
         source_type: str,
         title: str | None = None,
         knowledge_points: list[str] | None = None,
+        knowledge_summary: str | None = None,
     ) -> Quiz:
         clean_content = content.strip()
         if not clean_content:
@@ -104,6 +114,8 @@ class QuizService:
                             "knowledge_points": "、".join(knowledge_points),
                         }
                     )
+                else:
+                    chain_input["knowledge_summary"] = knowledge_summary or ""
                 result = await chain.ainvoke(chain_input)
                 content = QuizGenerationOutput.model_validate(result)
                 texts = [content.title, content.summary]

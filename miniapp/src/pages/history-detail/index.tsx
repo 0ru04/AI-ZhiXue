@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { getQuizHistoryDetail } from '../../services/api'
-import type { QuizHistoryDetail } from '../../types'
+import type { AnswerRecord, Question, QuizHistoryDetail } from '../../types'
 import './index.scss'
 
 type PageState = 'loading' | 'ready' | 'error'
@@ -18,6 +18,21 @@ function formatDate(value: string): string {
 function formatDuration(durationMs: number): string {
   const seconds = Math.floor(durationMs / 1000)
   return `${Math.floor(seconds / 60)} 分 ${seconds % 60} 秒`
+}
+
+function formatAnswers(
+  question: Question,
+  answerKeys: string[],
+  emptyLabel: string,
+): string {
+  if (answerKeys.length === 0) return emptyLabel
+
+  const optionKeys = new Set(question.options.map((option) => option.key))
+  const orderedOptions = question.options
+    .filter((option) => answerKeys.includes(option.key))
+    .map((option) => `${option.key}. ${option.text}`)
+  const unmatchedKeys = answerKeys.filter((key) => !optionKeys.has(key))
+  return [...orderedOptions, ...unmatchedKeys].join('、') || emptyLabel
 }
 
 export default function HistoryDetailPage() {
@@ -93,6 +108,19 @@ export default function HistoryDetailPage() {
 
   const { report } = detail
   const questionById = new Map(detail.questions.map((question) => [question.id, question]))
+  const wrongAnswers = detail.answer_records
+    .filter((record) => record.is_correct === false)
+    .map((record) => ({
+      record,
+      question: questionById.get(record.question_id),
+    }))
+    .filter(
+      (item): item is { record: AnswerRecord; question: Question } =>
+        item.question !== undefined,
+    )
+  const wrongQuestionIds = new Set(
+    wrongAnswers.map(({ record }) => record.question_id),
+  )
 
   return (
     <View className='page-shell history-detail-page'>
@@ -152,6 +180,54 @@ export default function HistoryDetailPage() {
             )}
           </View>
 
+          <View className='panel history-report-section history-wrong-section'>
+            <Text className='display-font history-section-title'>本次错题</Text>
+            {wrongAnswers.length > 0 ? (
+              wrongAnswers.map(({ record, question }, index) => (
+                <View key={record.question_id} className='history-wrong-item'>
+                  <View className='history-wrong-heading'>
+                    <Text className='history-wrong-number'>
+                      {String(index + 1).padStart(2, '0')}
+                    </Text>
+                    <Text className='history-question-title history-wrong-stem'>
+                      {question.stem}
+                    </Text>
+                  </View>
+                  <View className='history-wrong-answer-row'>
+                    <Text className='history-wrong-label'>你的答案</Text>
+                    <Text className='history-wrong-answer history-wrong-user-answer'>
+                      {formatAnswers(question, record.selected_answers, '未作答')}
+                    </Text>
+                  </View>
+                  <View className='history-wrong-answer-row'>
+                    <Text className='history-wrong-label history-wrong-label-correct'>
+                      正确答案
+                    </Text>
+                    <Text className='history-wrong-answer history-wrong-correct-answer'>
+                      {formatAnswers(question, question.answer, '未提供')}
+                    </Text>
+                  </View>
+                  <View className='history-wrong-explanation'>
+                    <Text className='history-wrong-label'>解析</Text>
+                    <Text className='history-wrong-explanation-copy'>
+                      {question.explanation.trim() || '本题暂无解析'}
+                    </Text>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <View className='history-wrong-empty'>
+                <Text className='history-wrong-empty-mark'>✓</Text>
+                <View className='history-wrong-empty-copy'>
+                  <Text className='history-wrong-empty-title'>本次没有错题</Text>
+                  <Text className='history-wrong-empty-text'>
+                    这次闯关全部答对，继续保持。
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+
           <View className='panel history-report-section'>
             <Text className='display-font history-section-title'>答题记录</Text>
             {detail.answer_records.map((record, index) => {
@@ -166,7 +242,11 @@ export default function HistoryDetailPage() {
               return (
                 <View
                   key={record.question_id}
-                  className={`history-answer ${record.is_correct ? '' : 'history-answer-wrong'}`}
+                  className={`history-answer ${
+                    wrongQuestionIds.has(record.question_id)
+                      ? 'history-answer-wrong'
+                      : ''
+                  }`}
                 >
                   <Text className='history-answer-number'>{String(index + 1).padStart(2, '0')}</Text>
                   <View className='history-answer-copy'>

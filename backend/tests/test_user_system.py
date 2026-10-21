@@ -148,6 +148,20 @@ def login(client: TestClient) -> tuple[str, dict]:
     return data["token"], data["user"]
 
 
+def generate_quiz(client: TestClient, user_input: str, headers=None) -> dict:
+    response = client.post(
+        "/api/v1/quiz/generate",
+        headers=headers,
+        json={"user_input": user_input},
+    )
+    assert response.status_code == 200
+    task_id = response.json()["data"]["task_id"]
+    result = client.get(f"/api/v1/quiz/tasks/{task_id}", headers=headers)
+    assert result.status_code == 200
+    assert result.json()["data"]["status"] == "completed"
+    return result.json()["data"]["quiz"]
+
+
 def test_user_profile_and_history_require_a_valid_token(client):
     assert client.get("/api/v1/user/profile").status_code == 401
     assert (
@@ -198,19 +212,8 @@ def test_quiz_and_report_persist_only_for_authenticated_users_and_xp_is_idempote
 ):
     token, user = login(client)
     headers = {"Authorization": f"Bearer {token}"}
-    anonymous = client.post(
-        "/api/v1/quiz/generate",
-        json={"user_input": "匿名学习"},
-    )
-    assert anonymous.status_code == 200
-
-    generated = client.post(
-        "/api/v1/quiz/generate",
-        headers=headers,
-        json={"user_input": "登录后学习"},
-    )
-    assert generated.status_code == 200
-    quiz = generated.json()["data"]
+    generate_quiz(client, "匿名学习")
+    quiz = generate_quiz(client, "登录后学习", headers)
     report_request = {
         "quiz_id": quiz["quiz_id"],
         "topic": quiz["user_input"],
@@ -253,15 +256,25 @@ def test_quiz_and_report_persist_only_for_authenticated_users_and_xp_is_idempote
         headers=headers,
     )
     assert detail.status_code == 200
-    assert len(detail.json()["data"]["questions"]) == 5
-    assert detail.json()["data"]["report"]["xp_reward"] == 86
+    detail_data = detail.json()["data"]
+    assert len(detail_data["questions"]) == 5
+    for question in detail_data["questions"]:
+        assert {"stem", "options", "answer", "explanation"} <= question.keys()
+    for answer_record in detail_data["answer_records"]:
+        assert {"selected_answers", "is_correct"} <= answer_record.keys()
+
+    answer_by_question = {
+        record["question_id"]: record
+        for record in detail_data["answer_records"]
+    }
+    assert answer_by_question["q1"]["is_correct"] is True
+    assert answer_by_question["q4"]["selected_answers"] == ["A"]
+    assert answer_by_question["q4"]["is_correct"] is False
+    assert detail_data["report"]["xp_reward"] == 86
 
 
 def test_anonymous_report_remains_available(client):
-    quiz = client.post(
-        "/api/v1/quiz/generate",
-        json={"user_input": "匿名报告"},
-    ).json()["data"]
+    quiz = generate_quiz(client, "匿名报告")
     response = client.post(
         "/api/v1/report/generate",
         json={
@@ -287,11 +300,11 @@ def test_anonymous_report_remains_available(client):
 def test_history_is_isolated_between_users(client):
     owner_token, _ = login(client)
     other_token, _ = login(client)
-    quiz = client.post(
-        "/api/v1/quiz/generate",
-        headers={"Authorization": f"Bearer {owner_token}"},
-        json={"user_input": "仅属于本人"},
-    ).json()["data"]
+    quiz = generate_quiz(
+        client,
+        "仅属于本人",
+        {"Authorization": f"Bearer {owner_token}"},
+    )
     response = client.get(
         f"/api/v1/user/quizzes/{quiz['quiz_id']}",
         headers={"Authorization": f"Bearer {other_token}"},
@@ -302,11 +315,11 @@ def test_history_is_isolated_between_users(client):
 def test_authenticated_user_cannot_save_another_users_quiz_report(client):
     owner_token, _ = login(client)
     other_token, _ = login(client)
-    quiz = client.post(
-        "/api/v1/quiz/generate",
-        headers={"Authorization": f"Bearer {owner_token}"},
-        json={"user_input": "所有权校验"},
-    ).json()["data"]
+    quiz = generate_quiz(
+        client,
+        "所有权校验",
+        {"Authorization": f"Bearer {owner_token}"},
+    )
 
     response = client.post(
         "/api/v1/report/generate",

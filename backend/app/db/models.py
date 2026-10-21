@@ -62,6 +62,34 @@ class QuizSession(Base):
     )
 
 
+class QuizGenerationTaskRow(Base):
+    __tablename__ = "quiz_generation_tasks"
+    __table_args__ = (
+        Index("ix_quiz_generation_tasks_status_updated", "status", "updated_at"),
+        Index("ix_quiz_generation_tasks_user_created", "user_id", "created_at"),
+    )
+
+    task_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id", ondelete="SET NULL"),
+    )
+    task_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    request_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    result_json: Mapped[dict | None] = mapped_column(JSON)
+    error_message: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+
+
 class AnswerRecordRow(Base):
     __tablename__ = "answer_records"
     __table_args__ = (

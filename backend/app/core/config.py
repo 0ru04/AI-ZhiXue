@@ -26,6 +26,53 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("DEEPSEEK_MODEL", "deepseek_model"),
     )
     deepseek_base_url: str = "https://api.deepseek.com"
+    tavily_api_key: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices("TAVILY_API_KEY", "tavily_api_key"),
+    )
+    knowledge_agent_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "KNOWLEDGE_AGENT_ENABLED",
+            "knowledge_agent_enabled",
+        ),
+    )
+    tavily_default_max_results: int = Field(
+        default=5,
+        ge=1,
+        le=10,
+        validation_alias=AliasChoices(
+            "TAVILY_DEFAULT_MAX_RESULTS",
+            "tavily_default_max_results",
+        ),
+    )
+    knowledge_agent_max_tool_calls: int = Field(
+        default=4,
+        ge=1,
+        le=10,
+        validation_alias=AliasChoices(
+            "KNOWLEDGE_AGENT_MAX_TOOL_CALLS",
+            "knowledge_agent_max_tool_calls",
+        ),
+    )
+    tavily_tool_timeout_seconds: float = Field(
+        default=10,
+        gt=0,
+        le=30,
+        validation_alias=AliasChoices(
+            "TAVILY_TOOL_TIMEOUT_SECONDS",
+            "tavily_tool_timeout_seconds",
+        ),
+    )
+    knowledge_agent_timeout_seconds: float = Field(
+        default=20,
+        gt=0,
+        le=60,
+        validation_alias=AliasChoices(
+            "KNOWLEDGE_AGENT_TIMEOUT_SECONDS",
+            "knowledge_agent_timeout_seconds",
+        ),
+    )
     content_blocklist: str = Field(
         default="",
         validation_alias=AliasChoices("CONTENT_BLOCKLIST", "content_blocklist"),

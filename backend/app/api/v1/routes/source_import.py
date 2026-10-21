@@ -1,7 +1,7 @@
 from typing import Annotated
 from pathlib import PurePath
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.auth_dependencies import get_optional_current_user
@@ -14,7 +14,11 @@ from app.models.source_import import (
     ParseUrlRequest,
     ParsedSourceResponse,
 )
-from app.services.persistence_service import PersistenceService
+from app.services.quiz_generation_task_service import (
+    create_quiz_generation_task,
+    execute_quiz_generation_task,
+    task_response,
+)
 from app.services.quiz_service import QuizService
 from app.services.source_import_service import MAX_UPLOAD_BYTES, SourceImportService
 
@@ -52,18 +56,32 @@ async def parse_url(
 @router.post("/generate")
 async def generate_from_source(
     request: GenerateFromSourceRequest,
+    http_request: Request,
+    background_tasks: BackgroundTasks,
     service: Annotated[QuizService, Depends(get_quiz_service)],
     user: Annotated[User | None, Depends(get_optional_current_user)],
     session: Annotated[AsyncSession | None, Depends(get_optional_db_session)],
 ):
-    quiz = await service.generate_from_source(
-        source_type=request.source_type,
-        title=request.title,
-        content=request.content,
-        knowledge_points=request.knowledge_points,
+    if session is None:
+        raise UserSystemConfigurationError("出题任务需要配置数据库")
+    session_factory = getattr(http_request.app.state, "db_session_factory", None)
+    if session_factory is None:
+        raise UserSystemConfigurationError("出题任务数据库尚未配置")
+    task = await create_quiz_generation_task(
+        session,
+        task_type="source",
+        request_data=request.model_dump(mode="json"),
+        user_id=user.id if user is not None else None,
+        server_started_at=http_request.app.state.started_at,
     )
-    if user is not None:
-        if session is None:
-            raise UserSystemConfigurationError("用户数据库尚未配置")
-        await PersistenceService().save_quiz(session, user, quiz)
-    return {"code": 0, "message": "ok", "data": quiz.model_dump()}
+    background_tasks.add_task(
+        execute_quiz_generation_task,
+        task.task_id,
+        session_factory,
+        service,
+    )
+    return {
+        "code": 0,
+        "message": "ok",
+        "data": task_response(task).model_dump(mode="json"),
+    }

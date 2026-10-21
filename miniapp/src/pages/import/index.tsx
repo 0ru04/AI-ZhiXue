@@ -6,8 +6,9 @@ import {
   generateSourceQuiz,
   parseSourceDocument,
   parseSourceUrl,
+  waitForQuizGeneration,
 } from '../../services/api'
-import type { ParsedSource, Quiz } from '../../types'
+import type { ParsedSource } from '../../types'
 import { createRun, saveRun } from '../../utils/session'
 import './index.scss'
 
@@ -134,11 +135,17 @@ export default function ImportPage() {
     }
   }
 
-  const startQuiz = async (request: ReturnType<typeof generateQuiz>) => {
+  const startQuiz = async (
+    request: ReturnType<typeof generateQuiz>,
+  ) => {
     setMode('generating')
     setError('')
     try {
-      const quiz: Quiz = await request.promise
+      const task = await request.promise
+      const quiz = await waitForQuizGeneration(
+        task.task_id,
+        await request.authenticated,
+      )
       saveRun(createRun(quiz, await request.authenticated))
       await Taro.navigateTo({ url: '/pages/quiz/index' })
     } catch (cause) {
@@ -471,13 +478,13 @@ export default function ImportPage() {
                     <Text className='button-arrow'>→</Text>
                   </Button>
                   <Text className='import-fixed-copy'>
-                    文件仅用于本次解析，不写入云端存储
+                    文件本身不保留；解析正文随任务临时保存，至少 7 天
                   </Text>
                 </View>
               ) : (
                 <>
                   <Text className='import-note'>
-                    上传文件仅用于本次解析，不写入云端存储；材料正文会提交给后端配置的
+                    上传文件本身不保留；解析正文会临时写入出题任务记录（至少保留 7 天），并提交给后端配置的
                     AI 服务提炼知识点并生成题目。
                   </Text>
                   <Button

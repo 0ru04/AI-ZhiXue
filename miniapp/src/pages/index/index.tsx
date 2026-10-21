@@ -1,23 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button, Image, Text, Textarea, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import {
   generateQuiz,
   getUserProfile,
+  waitForQuizGeneration,
   type ApiRequest,
 } from '../../services/api'
 import { ensureWechatLogin, hasExplicitlyLoggedOut } from '../../services/auth'
-import type { Quiz, UserProfile } from '../../types'
+import type { QuizGenerationTask, UserProfile } from '../../types'
 import { createRun, saveRun } from '../../utils/session'
 import './index.scss'
 
 const EXAMPLE_TOPICS = ['RAG 是什么', '光合作用', '黑洞会吞掉地球吗']
 const MORE_EXAMPLES = ['为什么天空是蓝色的？', '什么是区块链？', '蝴蝶如何变成蝴蝶？']
 const PRINT_STEPS = [
-  ['整理学习内容', '正在读取'],
-  ['提炼核心考点', '等待中'],
-  ['印刷闯关题目', '等待中'],
-  ['校对答案讲解', '等待中'],
+  ['创建并保存任务', '等待后台领取'],
+  ['生成闯关题目', '后台处理中'],
 ]
 
 function Mascot({ className = '' }: { className?: string }) {
@@ -45,7 +44,7 @@ export default function Index() {
     'loading' | 'ready' | 'anonymous' | 'error'
   >('loading')
   const [wechatLoggedOut, setWechatLoggedOut] = useState(false)
-  const activeRequest = useRef<ApiRequest<Quiz> | null>(null)
+  const activeRequest = useRef<ApiRequest<QuizGenerationTask> | null>(null)
   const requestSequence = useRef(0)
   const homeRequestSequence = useRef(0)
 
@@ -81,14 +80,6 @@ export default function Index() {
     })()
   })
 
-  useEffect(() => {
-    if (mode !== 'loading') return undefined
-    const timer = setInterval(() => {
-      setLoadingStep((step) => Math.min(step + 1, PRINT_STEPS.length - 1))
-    }, 1800)
-    return () => clearInterval(timer)
-  }, [mode])
-
   const startGeneration = async () => {
     const userInput = input.trim()
     if (!userInput || mode === 'loading') return
@@ -103,7 +94,14 @@ export default function Index() {
     activeRequest.current = request
     let requestFailed = false
     try {
-      const quiz = await request.promise
+      const task = await request.promise
+      const authenticated = await request.authenticated
+      const quiz = await waitForQuizGeneration(
+        task.task_id,
+        authenticated,
+        () => requestSequence.current !== sequence,
+        (status) => setLoadingStep(status === 'running' ? 1 : 0),
+      )
       if (requestSequence.current !== sequence) return
       saveRun(createRun(quiz, await request.authenticated))
       await Taro.navigateTo({ url: '/pages/quiz/index' })
@@ -203,7 +201,7 @@ export default function Index() {
               </Text>
             </View>
             <View className='steps-list'>
-              {PRINT_STEPS.map(([label], index) => (
+              {PRINT_STEPS.map(([label, activeStatus], index) => (
                 <View
                   key={label}
                   className={`step-row ${
@@ -222,7 +220,7 @@ export default function Index() {
                     {index < loadingStep
                       ? '已完成'
                       : index === loadingStep
-                        ? '正在排版'
+                        ? activeStatus
                         : '等待中'}
                   </Text>
                 </View>
@@ -237,18 +235,20 @@ export default function Index() {
             <View className='bubble bubble-yellow'>
               小墨正在逐题校对，确保答案和讲解都对得上。
             </View>
-            <Text className='tiny loading-time'>通常需要几秒钟，别走开。</Text>
+            <Text className='tiny loading-time'>
+              任务已保存，正在后台整理资料并生成题目；完成后会自动进入闯关。
+            </Text>
             <Button className='primary-button button-ghost cancel-button' onClick={cancelGeneration}>
-              取消
+              停止等待
             </Button>
           </View>
         ) : mode === 'error' ? (
           <View className='error-state'>
             <Mascot className='error-mascot' />
-            <Text className='error-badge'>AI-500</Text>
-            <Text className='display-font error-title'>印刷机卡纸了</Text>
+            <Text className='error-badge'>任务失败</Text>
+            <Text className='display-font error-title'>这次没有印出来</Text>
             <Text className='body-font error-subtitle'>
-              网络抖了一下，题目没印出来。你的输入还在，再来一次就好。
+              出题任务没有完成。查看下方提示后可以重试，原输入会保留。
             </Text>
             <View className='error-input'>
               <Text className='error-input-label'>你刚才输入的是</Text>
@@ -269,7 +269,7 @@ export default function Index() {
               </Button>
             </View>
             <Text className='tiny error-note'>
-              不会把半成品题目交给你；重试不会丢失这段输入。
+              不会把半成品题目交给你；重新提交会创建一个新的任务。
             </Text>
           </View>
         ) : (

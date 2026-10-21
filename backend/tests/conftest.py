@@ -1,7 +1,49 @@
 import pytest
 
+from app.db.models import QuizGenerationTaskRow
 from app.models.quiz import Quiz
 from app.models.report import AnswerRecord, ReportRequest
+
+
+class InMemoryTaskDatabase:
+    def __init__(self):
+        self.tasks = {}
+
+    class Session:
+        def __init__(self, database):
+            self.database = database
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        def add(self, row):
+            if isinstance(row, QuizGenerationTaskRow):
+                self.database.tasks[row.task_id] = row
+
+        async def commit(self):
+            return None
+
+        async def execute(self, _statement):
+            return None
+
+        async def get(self, model, key):
+            if model is QuizGenerationTaskRow:
+                return self.database.tasks.get(key)
+            return None
+
+    def session_factory(self):
+        return self.Session(self)
+
+    async def dependency(self):
+        yield self.Session(self)
+
+
+@pytest.fixture
+def task_database():
+    return InMemoryTaskDatabase()
 
 
 @pytest.fixture

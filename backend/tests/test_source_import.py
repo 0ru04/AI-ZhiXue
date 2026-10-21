@@ -15,6 +15,7 @@ from pypdf.generic import (
 from app.api.dependencies import get_quiz_service, get_source_import_service
 from app.core.config import Settings
 from app.core.exceptions import SourceImportError
+from app.db.session import get_optional_db_session
 from app.main import create_app
 from app.services.source_import_service import (
     FetchedPage,
@@ -320,7 +321,7 @@ class FakeSourceImportService:
 
 
 def test_document_parse_route_rejects_unsupported_word_format():
-    app = create_app()
+    app = create_app(Settings(_env_file=None))
 
     with TestClient(app) as client:
         response = client.post(
@@ -366,7 +367,10 @@ def test_url_parse_route_returns_standard_envelope():
     assert response.json()["data"]["source_type"] == "web"
 
 
-def test_source_generation_route_uses_confirmed_points(quiz):
+def test_source_generation_route_uses_polling_task_and_confirmed_points(
+    quiz,
+    task_database,
+):
     class FakeSourceQuizService:
         async def generate_from_source(
             self,
@@ -386,11 +390,13 @@ def test_source_generation_route_uses_confirmed_points(quiz):
                 }
             )
 
-    app = create_app()
+    app = create_app(Settings(_env_file=None))
     app.dependency_overrides[get_quiz_service] = FakeSourceQuizService
+    app.dependency_overrides[get_optional_db_session] = task_database.dependency
+    app.state.db_session_factory = task_database.session_factory
 
     with TestClient(app) as client:
-        response = client.post(
+        created = client.post(
             "/api/v1/source/generate",
             json={
                 "source_type": "web",
@@ -400,6 +406,11 @@ def test_source_generation_route_uses_confirmed_points(quiz):
                 "knowledge_points": ["Section"],
             },
         )
+        assert created.status_code == 200
+        task_id = created.json()["data"]["task_id"]
+        response = client.get(f"/api/v1/quiz/tasks/{task_id}")
 
     assert response.status_code == 200
-    assert response.json()["data"]["source_type"] == "web"
+    assert response.json()["data"]["status"] == "completed"
+    assert response.json()["data"]["quiz"]["source_type"] == "web"
+    assert response.json()["data"]["quiz"]["user_input"] == "网页：Public article"
