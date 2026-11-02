@@ -1,4 +1,4 @@
-# AI智学 MVP
+# AI智学 
 
 微信小程序核心闭环：输入一段学习内容，生成 5 道闯关题，逐题即时讲解，并生成复盘报告。前端使用 Taro 4.3 + React + TypeScript，支持微信小程序和 H5 浏览器验收；后端使用 FastAPI、Pydantic v2 和 LangChain 的 OpenAI 兼容模型适配。
 
